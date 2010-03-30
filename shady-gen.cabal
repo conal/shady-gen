@@ -1,0 +1,64 @@
+Name:                shady-gen
+Version:             0.4.0
+Cabal-Version:       >= 1.2
+Synopsis:            Functional GPU programming - DSEL & compiler
+Category:            Graphics, Language
+Description:
+  Compile functional specifications for GPU execution.
+  See also shady-render and shady-tv
+  .
+  Copyright 2009,2010 by Conal Elliott; GNU AGPLv3 license (see COPYING).
+  This license is a place-holder.  Let me know if you'd like other terms.
+Author:              Conal Elliott
+Maintainer:          conal@conal.net
+Homepage:            http://haskell.org/haskellwiki/shady
+Package-Url:         http://conal.net/repos/shady-gen
+Copyright:           (c) by Conal Elliott 2009,2010
+License:             OtherLicense
+License-File:        COPYING
+Stability:           experimental
+build-type:          Simple
+
+Library
+  hs-Source-Dirs:      src
+
+  Extensions:
+  Build-Depends:       base >=4 && < 5, containers, mtl, wl-pprint
+                     , applicative-numbers>=0.0.4, vector-space>=0.5.6
+                     , TypeCompose >= 0.7
+                     , MemoTrie, ty, data-treify, Boolean
+
+  Exposed-Modules:
+                       Text.PrettyPrint.Leijen.PrettyPrec
+                       Text.PrettyPrint.Leijen.DocExpr
+                       Data.NameM
+                       Shady.Misc
+                       Shady.Vec
+                       Shady.Complex
+                       Shady.Language.Type
+                       Shady.Language.Glom
+                       Shady.Language.Operator
+                       Shady.Language.Exp
+                       Shady.Language.Graph
+                       Shady.Language.Reify
+                       Shady.Language.Cse
+                       Shady.Language.GLSL
+                       Shady.ITransform
+                       Shady.Color
+                       Shady.Image
+                       Shady.ParamSurf
+                       Shady.Lighting
+                       Shady.CompileE
+                       Shady.CompileEs
+                       Shady.CompileSurface
+                       Shady.CompileImage
+
+                       Data.StableMemo
+                       Shady.Play.CseTest
+                       Shady.Play.VectorTest
+                       -- experimental:
+                       Data.PolyStableMemo
+                       -- Data.NatTrie
+                       -- Data.TypeTrie
+
+-- For examples, see examples/shady-examples.cabal
