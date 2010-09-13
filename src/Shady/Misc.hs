@@ -21,14 +21,13 @@ module Shady.Misc
   , Unop,Binop
   , padTo
   , flip1, flip2, flip3, flip4
-  , Sink, Action, (>+>)
+  , Sink, Action, (>+>), forget
   , R
   -- * Find another home
   , EyePos
   ) where
 
--- import Data.Monoid (Monoid(..))
--- import Control.Applicative (pure,liftA2)
+import Control.Applicative ((<$))
 
 -- From TypeCompose package
 import Control.Compose (result)
@@ -36,7 +35,6 @@ import Control.Instances ()
 
 import Data.Maclaurin ((:>)(..))  -- For Frac instance
 import Data.Boolean
-
 
 type R = Float
 
@@ -136,9 +134,14 @@ infixr 1 >+>
 (>+>) :: Sink a -> Sink b -> Sink (a,b)
 (sa >+> sb) (a,b) = sa a >> sb b
 
+-- | Discard a functor value.
+forget :: Functor f => f a -> f ()
+forget = (() <$)
+-- forget = fmap (const ())
 
 {--------------------------------------------------------------------
     Find another home
 --------------------------------------------------------------------}
 
 type EyePos = (R,R,R)
+
