@@ -1,4 +1,4 @@
-` <!-- -*- markdown -*-
+ <!-- -*- markdown -*-
 
 > {-# LANGUAGE GADTs, KindSignatures, Rank2Types, TypeOperators
 >   , PatternGuards, NamedFieldPuns, StandaloneDeriving
@@ -26,7 +26,6 @@ Imports
 > 
 > import Data.Function (on)
 > import Data.Ord (comparing)
-> import Data.Maybe (fromMaybe)
 > import Data.List (sortBy)
 > import Control.Applicative (Applicative(..),liftA2,(<$>))
 > import Control.Arrow (first,second,(&&&))
@@ -43,6 +42,7 @@ Imports
 
 > import Shady.Language.Exp
 
+< import Debug.Trace
 
 Graphs
 ======
@@ -55,6 +55,8 @@ A graph node is just an expression, but it will typically not be nested.
 A `TExp` is like `T E`, but with an `Ord` instance for use with `Map`:
 
 > data TExp = forall a. HasType a => TExp (E a)
+
+> instance Show TExp where show (TExp e) = show e
 
 The reason for mapping from a node to index instead of vice versa is just that it's  more efficient to build in this direction.
 We'll invert the map later when we convert back from `Graph` to `E`.
@@ -97,10 +99,13 @@ The names are guaranteed to be in ascending order so that we can trivially top-s
 
 > dagify :: HasType a => E a -> Graph a
 > dagify e = second fst $ S.runState (dagifyExp e)
->                            (Map.empty, map reverse $ tail allIds)
+>                            (Map.empty, ids)
 >  where
->    allIds :: [Id]
+>    allIds, ids :: [Id]
 >    allIds = "" : [c:name | name <- allIds, c <- ['a'..'z']]
+>    ids = filter (not . (`Set.member` eVars)) (map reverse (tail allIds))
+>    eVars :: Set Id
+>    eVars = vars e
 
 The name list is not alphabetized and moreover could not be alpabetized.
 Define a comparison function, which could be compare length/string pairs.
@@ -161,6 +166,14 @@ As often, it'll be handy to compute free variable sets:
 > tFreeVars :: TExp -> Set Id
 > tFreeVars (TExp e) = freeVars e
 
+Also handy will be extracting all variables free & bound:
+
+> vars :: E a -> Set Id
+> vars (Var (V n _))   = Set.singleton n
+> vars (Op _)          = Set.empty
+> vars (f :^ a)        = vars f `Set.union` vars a
+> vars (Lam (V n _) b) = Set.insert n (vars b)
+
 
 Conversion from Graph (dag) to E
 ==================================
@@ -190,20 +203,23 @@ Inlining
 To minimize the `let` bindings, let's re-inline all bindings that are used only once.
 To know how which bindings are used only once, count them.
 
-> inlinables :: Map Id TExp -> Set Id
-> inlinables m = asSet $ (== 1) <$> countUses m
+> inlinables :: HasType a => Graph a -> Set Id
 
-< countUses :: Map Id TExp -> Map Id Int
-< countUses = foldr addBind Map.empty . Map.elems
+ > inlinables = const Set.empty   -- temp
+
+> inlinables g = asSet $ (== 1) <$> countUses g
+
+< countUses :: HasType a => Graph a -> Map Id Int
+< countUses (e,m) = foldr addBind Map.empty (TExp e : Map.keys m)
 <  where
 <    addBind :: TExp -> Map Id Int -> Map Id Int
-<    addBind te m = foldr (\ fv -> Map.insertWith (+) fv 1) m (tFreeVars te)
+<    addBind te count = foldr (\ fv -> Map.insertWith (+) fv 1) count (tFreeVars te)
 
 This definition of `countUses` is more complicated than I'd like.
 Try again, this time extracting all of the free variables in all of the expressions,  and then counting.
 
-> countUses :: Map Id TExp -> Map Id Int
-> countUses = histogram . concatMap (Set.toList . tFreeVars) . Map.elems
+> countUses :: HasType a => Graph a -> Map Id Int
+> countUses (e,m) = histogram $ concatMap (Set.toList . tFreeVars) (TExp e : Map.keys m)
 
 Count the number of occurrences of each member of a list:
 
@@ -223,17 +239,18 @@ Turn a boolean map (characteristic function) into a set:
 Now revisit `undagify`, performing some inlining along the way.
 
 > undagify :: forall a. HasType a => Graph a -> E a
-> undagify (root,nodeToId) = foldr bind (inline root) (sortedBinds texps)
+> undagify g@(root,nodeToId) = -- traceShow ins $
+>                              foldr bind (inline root) (sortedBinds texps)
 >  where
 >    texps :: Map Id TExp
 >    texps = invertMap nodeToId
 >    ins :: Set Id
->    ins = inlinables texps
+>    ins = inlinables g
 >    bind :: (Id,TExp) -> E a -> E a
 >    bind (name, TExp rhs) = lett' name (inline rhs)
 >    -- Inline texps in an expression
 >    inline :: E b -> E b
->    inline (Var v@(V name _)) | Set.member name ins = tLookup v texps
+>    inline (Var v@(V name _)) | Set.member name ins, Just e' <- tLookup v texps = inline e'
 >    inline (f :^ a) = inline f :^ inline a
 >    inline (Lam v b) = Lam v (inline b) -- assumes no shadowing
 >    inline e = e
@@ -245,10 +262,8 @@ Now revisit `undagify`, performing some inlining along the way.
 
 For the inlining step, we'll have to look up a variable in the map, and check that it  has the required type.
 
-> tLookup :: V a -> Map Id TExp -> E a
-> tLookup (V name tya) m =
->   fromTExp tya (fromMaybe (error "undagify: tLookup failure")
->                           (Map.lookup name m))
+> tLookup :: V a -> Map Id TExp -> Maybe (E a)
+> tLookup (V name tya) m = fromTExp tya <$> Map.lookup name m
 
 > fromTExp :: Type a -> TExp -> E a
 > fromTExp tya (TExp e) | Just Refl <- typeOf1 e `tyEq` tya = e
