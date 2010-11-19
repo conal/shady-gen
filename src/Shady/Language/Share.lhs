@@ -141,13 +141,15 @@ Needing `HasType` in `insertG` forced me to add it several other places, includi
 An expression is abstractable if it has base type and is non-trivial.
 
 > abstractable :: HasType a => E a -> Bool
-> abstractable e = nonTrivial e && isBase (typeOf1 e)
+> abstractable e = -- traceShow (e,typeOf1 e,nonTrivial e,isBase (typeOf1 e)) $
+>                  nonTrivial e && isBase (typeOf1 e)
 >  where
 >    nonTrivial (_ :^ _) = True
 >    nonTrivial _        = False
 >    isBase :: Type a -> Bool
 >    isBase (VecT _) = True
 >    isBase _        = False
+
 
 Identifier generation is as usual, accessing and incrementing the counter state:
 
@@ -167,13 +169,13 @@ Free variables
 
 As often, it'll be handy to compute free variable sets:
 
-> freeVars :: E a -> Set Id
-> freeVars (Var (V n _))   = Set.singleton n
-> freeVars (Op _)          = Set.empty
-> freeVars (f :^ a)        = freeVars f `Set.union` freeVars a
-> freeVars (Lam (V n _) b) = Set.delete n (freeVars b)
+> freeVars :: E a -> [Id]
+> freeVars (Var (V n _))   = [n]
+> freeVars (Op _)          = []
+> freeVars (f :^ a)        = freeVars f ++ freeVars a
+> freeVars (Lam (V n _) b) = filter (/= n) (freeVars b)
 
-> tFreeVars :: TExp -> Set Id
+> tFreeVars :: TExp -> [Id]
 > tFreeVars (TExp e) = freeVars e
 
 Also handy will be extracting all variables free & bound:
@@ -217,19 +219,12 @@ To know how which bindings are used only once, count them.
 
  > inlinables = const Set.empty   -- temp
 
-> inlinables g = asSet $ (== 1) <$> countUses g
-
-< countUses :: HasType a => Graph a -> Map Id Int
-< countUses (e,m) = foldr addBind Map.empty (TExp e : Map.keys m)
-<  where
-<    addBind :: TExp -> Map Id Int -> Map Id Int
-<    addBind te count = foldr (\ fv -> Map.insertWith (+) fv 1) count (tFreeVars te)
-
-This definition of `countUses` is more complicated than I'd like.
-Try again, this time extracting all of the free variables in all of the expressions,  and then counting.
+> inlinables g =
+>   -- traceShow g $ traceShow (countUses g) $
+>   asSet $ (== 1) <$> countUses g
 
 > countUses :: HasType a => Graph a -> Map Id Int
-> countUses (e,m) = histogram $ concatMap (Set.toList . tFreeVars) (TExp e : Map.keys m)
+> countUses (e,m) = histogram $ concatMap tFreeVars (TExp e : Map.keys m)
 
 Count the number of occurrences of each member of a list:
 
@@ -249,7 +244,8 @@ Turn a boolean map (characteristic function) into a set:
 Now revisit `undagify`, performing some inlining along the way.
 
 > undagify :: forall a. HasType a => Graph a -> E a
-> undagify g@(root,expToId) = foldr bind (inline root) (sortedBinds texps)
+> undagify g@(root,expToId) = -- traceShow ins $
+>                             foldr bind (inline root) (sortedBinds texps)
 >  where
 >    texps :: Map Id TExp
 >    texps = invertMap expToId

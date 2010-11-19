@@ -128,6 +128,26 @@ ra z = bw (z <.> z <* 1)
 
 stripes (a :+ _) = frac a <* 0.5
 
+a1 :: FloatE
+a1 = magnitudeSq (t *^ uv)
+
+a2 :: BoolE
+a2 = uscale2 t udisk uv
+
+a3 :: R4E
+a3 = colorToR4 $ toColor (uscale2 (cos t) udisk uv)
+
+t :: FloatE
+t = Var (var "t")
+u,v :: FloatE
+u = Var (var "u")
+v = Var (var "v")
+
+uv :: Point
+uv = u :+ v
+
+-- Something is going wrong. the uscale2 t is having no effect above.
+-- Could the Bool be somehow thwarting?
 
 -------------
 
