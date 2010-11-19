@@ -47,8 +47,7 @@ Imports
 Graphs
 ======
 
-A graph is a map from nodes to variable names, plus a root expression (typically a  variable).
-A graph node is just an expression, but it will typically not be nested.
+A graph is a map from expressions to variable names, plus a root expression (typically a  variable).
 
 > type Graph a = (E a, Map TExp Id)
 
@@ -58,7 +57,7 @@ A `TExp` is like `T E`, but with an `Ord` instance for use with `Map`:
 
 > instance Show TExp where show (TExp e) = show e
 
-The reason for mapping from a node to index instead of vice versa is just that it's  more efficient to build in this direction.
+The reason for mapping from an expression to index instead of vice versa is just that it's  more efficient to build in this direction.
 We'll invert the map later when we convert back from `Graph` to `E`.
 
 > invertMap :: Ord v => Map k v -> Map v k
@@ -98,8 +97,7 @@ The names are guaranteed to be in ascending order so that we can trivially top-s
 > type GraphM = S.State (ExpMap, [Id])
 
 > dagify :: HasType a => E a -> Graph a
-> dagify e = second fst $ S.runState (dagifyExp e)
->                            (Map.empty, ids)
+> dagify e = second fst $ S.runState (dagifyExp e) (Map.empty, ids)
 >  where
 >    allIds, ids :: [Id]
 >    allIds = "" : [c:name | name <- allIds, c <- ['a'..'z']]
@@ -113,7 +111,7 @@ Define a comparison function, which could be compare length/string pairs.
 > compareIds :: String -> String -> Ordering
 > compareIds = comparing (length &&& id)
 
-Graph construction works by recursively constructing and inserting graph nodes:
+Graph construction works by recursively constructing and inserting expression/name pairs:
 
 > dagifyExp :: HasType a => E a -> GraphM (E a)
 > dagifyExp e = dagN e >>= insertG
@@ -125,19 +123,31 @@ Graph construction works by recursively constructing and inserting graph nodes:
 > -- dagN (Lam v b) = Lam v <$> dagifyExp b
 > dagN (Lam _ _) = error "dagN: Can't yet perform CSE on Lam"
 
-If the given node is already in the graph, reuse the existing node id.
-Otherwise, insert insert it, giving it a new node id.
+If the given expression is already in the graph, reuse the existing identifier.
+Otherwise, insert insert it, giving it a new identifier.
 
 > insertG :: HasType a => E a -> GraphM (E a)
-> insertG node = maybe (addExp node) return
->                 =<< findExp node <$> S.gets fst
+> insertG e | not (abstractable e) = return e
+>           | otherwise = maybe (addExp e) return
+>                           =<< findExp e <$> S.gets fst
 > 
 > addExp :: HasType a => E a -> GraphM (E a)
-> addExp node = do name <- genId
->                  S.modify (first (Map.insert (TExp node) name))
->                  return (Var (var name))
+> addExp e = do name <- genId
+>               S.modify (first (Map.insert (TExp e) name))
+>               return (Var (var name))
 
 Needing `HasType` in `insertG` forced me to add it several other places, including in  the `E` constructor types.
+
+An expression is abstractable if it has base type and is non-trivial.
+
+> abstractable :: HasType a => E a -> Bool
+> abstractable e = nonTrivial e && isBase (typeOf1 e)
+>  where
+>    nonTrivial (_ :^ _) = True
+>    nonTrivial _        = False
+>    isBase :: Type a -> Bool
+>    isBase (VecT _) = True
+>    isBase _        = False
 
 Identifier generation is as usual, accessing and incrementing the counter state:
 
@@ -146,10 +156,10 @@ Identifier generation is as usual, accessing and incrementing the counter state:
 >            S.put (m,names)
 >            return name
 
-To search for an exp in the accumulated node map,
+To search for an exp in the accumulated map,
 
 > findExp :: HasType a => E a -> ExpMap -> Maybe (E a)
-> findExp n = fmap (Var . var) . Map.lookup (TExp n)
+> findExp e = fmap (Var . var) . Map.lookup (TExp e)
 
 
 Free variables
@@ -182,13 +192,13 @@ Given a `Graph`, let's now build an `E`, with sharing.
 
 Recall the `Graph` type and map inversion, defined above:
 
-< type Graph a = (E a, Map TExp Id)
+< type Graph a = (E a, ExpMap)
 
-To rebuild an `E`, walk through the inverted map in order, generating a `let` for  each node.
+To rebuild an `E`, walk through the inverted map in order, generating a `let` for  each binding.
 
 < undagify :: forall a. HasType a => Graph a -> E a
-< undagify (root,nodeToId) =
-<   foldr bind root (sortedBinds (invertMap nodeToId))
+< undagify (root,expToId) =
+<   foldr bind root (sortedBinds (invertMap expToId))
 <  where
 <    bind :: (Id,TExp) -> E a -> E a
 <    bind (name, TExp rhs) = lett name rhs
@@ -239,11 +249,10 @@ Turn a boolean map (characteristic function) into a set:
 Now revisit `undagify`, performing some inlining along the way.
 
 > undagify :: forall a. HasType a => Graph a -> E a
-> undagify g@(root,nodeToId) = -- traceShow ins $
->                              foldr bind (inline root) (sortedBinds texps)
+> undagify g@(root,expToId) = foldr bind (inline root) (sortedBinds texps)
 >  where
 >    texps :: Map Id TExp
->    texps = invertMap nodeToId
+>    texps = invertMap expToId
 >    ins :: Set Id
 >    ins = inlinables g
 >    bind :: (Id,TExp) -> E a -> E a
