@@ -28,7 +28,8 @@ import Shady.Image
 import Shady.Complex
 import Shady.Misc (frac)
 
-import Shady.Language.Cse
+-- import Shady.Language.Cse
+import Shady.Language.Share
 
 x :: HasExpr a => a -> Expr
 x = expr

@@ -40,7 +40,8 @@ Library
                        Shady.Language.Exp
                        Shady.Language.Graph
                        Shady.Language.Reify
-                       Shady.Language.Cse
+                       -- Shady.Language.Cse
+                       Shady.Language.Share
                        Shady.Language.GLSL
                        Shady.ITransform
                        Shady.Color

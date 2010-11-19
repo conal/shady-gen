@@ -44,7 +44,8 @@ import Shady.Language.Operator (Op(Pair,Lit))
 import Shady.Language.Exp hiding ((<+>),get)
 import Shady.Language.Glom
 import Shady.Misc (padTo)
-import Shady.Language.Cse (cse)
+-- import Shady.Language.Cse (cse)
+import Shady.Language.Share (cse)
 
 {--------------------------------------------------------------------
     Syntax types
