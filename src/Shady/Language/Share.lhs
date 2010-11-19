@@ -42,7 +42,6 @@ Imports
 
 > import Shady.Language.Exp
 
-< import Debug.Trace
 
 Graphs
 ======
@@ -141,8 +140,7 @@ Needing `HasType` in `insertG` forced me to add it several other places, includi
 An expression is abstractable if it has base type and is non-trivial.
 
 > abstractable :: HasType a => E a -> Bool
-> abstractable e = -- traceShow (e,typeOf1 e,nonTrivial e,isBase (typeOf1 e)) $
->                  nonTrivial e && isBase (typeOf1 e)
+> abstractable e = nonTrivial e && isBase (typeOf1 e)
 >  where
 >    nonTrivial (_ :^ _) = True
 >    nonTrivial _        = False
@@ -167,16 +165,16 @@ To search for an exp in the accumulated map,
 Free variables
 ==============
 
-As often, it'll be handy to compute free variable sets:
+Count all variables occurrences in an expression:
 
-> freeVars :: E a -> [Id]
-> freeVars (Var (V n _))   = [n]
-> freeVars (Op _)          = []
-> freeVars (f :^ a)        = freeVars f ++ freeVars a
-> freeVars (Lam (V n _) b) = filter (/= n) (freeVars b)
+> countOccs :: E a -> Map Id Int
+> countOccs (Var (V n _))   = Map.singleton n 1
+> countOccs (Op _)          = Map.empty
+> countOccs (f :^ a)        = Map.unionWith (+) (countOccs f) (countOccs a)
+> countOccs (Lam (V n _) b) = Map.delete n (countOccs b)
 
-> tFreeVars :: TExp -> [Id]
-> tFreeVars (TExp e) = freeVars e
+> tCountOccs :: TExp -> Map Id Int
+> tCountOccs (TExp e) = countOccs e
 
 Also handy will be extracting all variables free & bound:
 
@@ -219,22 +217,10 @@ To know how which bindings are used only once, count them.
 
  > inlinables = const Set.empty   -- temp
 
-> inlinables g =
->   -- traceShow g $ traceShow (countUses g) $
->   asSet $ (== 1) <$> countUses g
+> inlinables g = asSet $ (== 1) <$> countUses g
 
 > countUses :: HasType a => Graph a -> Map Id Int
-> countUses (e,m) = histogram $ concatMap tFreeVars (TExp e : Map.keys m)
-
-Count the number of occurrences of each member of a list:
-
-> histogram :: Ord a => [a] -> Map a Int
-> histogram = foldr incMap Map.empty
-
-Increment a map element:
-
-> incMap :: (Ord k, Num n) => k -> Map k n -> Map k n
-> incMap k = Map.insertWith (+) k 1
+> countUses (e,m) = Map.unionsWith (+) (map tCountOccs (TExp e : Map.keys m))
 
 Turn a boolean map (characteristic function) into a set:
 
@@ -244,8 +230,7 @@ Turn a boolean map (characteristic function) into a set:
 Now revisit `undagify`, performing some inlining along the way.
 
 > undagify :: forall a. HasType a => Graph a -> E a
-> undagify g@(root,expToId) = -- traceShow ins $
->                             foldr bind (inline root) (sortedBinds texps)
+> undagify g@(root,expToId) = foldr bind (inline root) (sortedBinds texps)
 >  where
 >    texps :: Map Id TExp
 >    texps = invertMap expToId
