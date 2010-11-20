@@ -137,6 +137,8 @@ a2 = uscale2 t udisk uv
 a3 :: R4E
 a3 = colorToR4 $ toColor (uscale2 (cos t) udisk uv)
 
+
+
 t :: FloatE
 t = Var (var "t")
 u,v :: FloatE

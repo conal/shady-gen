@@ -139,11 +139,21 @@ Needing `HasType` in `insertG` forced me to add it several other places, includi
 
 An expression is abstractable if it has base type and is non-trivial.
 
+< abstractable :: HasType a => E a -> Bool
+< abstractable e = nonTrivial e && isBase (typeOf1 e)
+<  where
+<    nonTrivial (_ :^ _) = True
+<    nonTrivial _        = False
+<    isBase :: Type a -> Bool
+<    isBase (VecT _) = True
+<    isBase _        = False
+
+On second thought, omit the `nonTrivial` condition.
+With GLSL, it's worthwhile even abstracting literals.
+
 > abstractable :: HasType a => E a -> Bool
-> abstractable e = nonTrivial e && isBase (typeOf1 e)
+> abstractable e = isBase (typeOf1 e)
 >  where
->    nonTrivial (_ :^ _) = True
->    nonTrivial _        = False
 >    isBase :: Type a -> Bool
 >    isBase (VecT _) = True
 >    isBase _        = False
