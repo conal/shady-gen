@@ -42,6 +42,18 @@ Imports
 
 > import Shady.Language.Exp
 
+< import Debug.Trace
+
+
+Common subexpression elimination
+================================
+
+To elimination common subexpressions, convert from expression to graph (dag) and back  to expression.
+The final expression will use `let` (as beta redexes) to abstract out expressions  that appear more than once.
+
+> cse :: HasType a => E a -> E a
+> cse = undagify . dagify
+
 
 Graphs
 ======
@@ -50,7 +62,7 @@ A graph is a map from expressions to variable names, plus a root expression (typ
 
 > type Graph a = (E a, Map TExp Id)
 
-A `TExp` is like `T E`, but with an `Ord` instance for use with `Map`:
+A `TExp` wraps an expression, encapsulating the type.
 
 > data TExp = forall a. HasType a => TExp (E a)
 
@@ -72,16 +84,6 @@ For simplicity, I'll just use the printed form of the `E`.
 >   TExp p `compare` TExp q = show p `compare` show q
 
 *TODO:* experiment with storing the `show` form in the `TExp`, to save recomputing it. Compare speed.
-
-
-Common subexpression elimination
-================================
-
-To elimination common subexpressions, convert from expression to graph (dag) and back  to expression.
-The final expression will use `let` (as beta redexes) to abstract out expressions  that appear more than once.
-
-> cse :: HasType a => E a -> E a
-> cse = undagify . dagify
 
 
 Conversion from E to Graph (dag)
@@ -140,23 +142,21 @@ Needing `HasType` in `insertG` forced me to add it several other places, includi
 An expression is abstractable if it has base type and is non-trivial.
 
 < abstractable :: HasType a => E a -> Bool
-< abstractable e = nonTrivial e && isBase (typeOf1 e)
-<  where
-<    nonTrivial (_ :^ _) = True
-<    nonTrivial _        = False
-<    isBase :: Type a -> Bool
-<    isBase (VecT _) = True
-<    isBase _        = False
+< abstractable e = nonTrivial e && isBaseType (typeOf1 e)
+
+< nonTrivial :: Exp a -> Bool
+< nonTrivial (_ :^ _) = True
+< nonTrivial _        = False
+
+> isBaseType :: Type a -> Bool
+> isBaseType (VecT _) = True
+> isBaseType _        = False
 
 On second thought, omit the `nonTrivial` condition.
 With GLSL, it's worthwhile even abstracting literals.
 
 > abstractable :: HasType a => E a -> Bool
-> abstractable e = isBase (typeOf1 e)
->  where
->    isBase :: Type a -> Bool
->    isBase (VecT _) = True
->    isBase _        = False
+> abstractable e = isBaseType (typeOf1 e)
 
 
 Identifier generation is as usual, accessing and incrementing the counter state:
