@@ -63,10 +63,14 @@ A graph is a map from expressions to variable names, plus a root expression (typ
 > type Graph a = (E a, Map TExp Id)
 
 A `TExp` wraps an expression, encapsulating the type.
+I'll also include the `show`, since I use it in comparisons, which I expect to cause it to be accessed repeatedly.
 
-> data TExp = forall a. HasType a => TExp (E a)
+> data TExp = forall a. HasType a => TExp (E a) String
 
-> instance Show TExp where show (TExp e) = show e
+> tExp :: HasType a => E a -> TExp
+> tExp e = TExp e (show e)
+
+> instance Show TExp where show (TExp _ s) = s
 
 The reason for mapping from an expression to index instead of vice versa is just that it's  more efficient to build in this direction.
 We'll invert the map later when we convert back from `Graph` to `E`.
@@ -78,12 +82,10 @@ To use `TExp` as a map key, it'll have to be ordered.
 For simplicity, I'll just use the printed form of the `E`.
 
 > instance Eq TExp where
->   TExp p == TExp q = show p == show q
+>   TExp _ s == TExp _ t = s == t
 > 
 > instance Ord TExp where
->   TExp p `compare` TExp q = show p `compare` show q
-
-*TODO:* experiment with storing the `show` form in the `TExp`, to save recomputing it. Compare speed.
+>   TExp _ s `compare` TExp _ t = s `compare` t
 
 
 Conversion from E to Graph (dag)
@@ -134,7 +136,7 @@ Otherwise, insert insert it, giving it a new identifier.
 > 
 > addExp :: HasType a => E a -> GraphM (E a)
 > addExp e = do name <- genId
->               S.modify (first (Map.insert (TExp e) name))
+>               S.modify (first (Map.insert (tExp e) name))
 >               return (Var (var name))
 
 Needing `HasType` in `insertG` forced me to add it several other places, including in  the `E` constructor types.
@@ -169,7 +171,7 @@ Identifier generation is as usual, accessing and incrementing the counter state:
 To search for an exp in the accumulated map,
 
 > findExp :: HasType a => E a -> ExpMap -> Maybe (E a)
-> findExp e = fmap (Var . var) . Map.lookup (TExp e)
+> findExp e = fmap (Var . var) . Map.lookup (tExp e)
 
 
 Free variables
@@ -184,7 +186,7 @@ Count all variables occurrences in an expression:
 > countOccs (Lam (V n _) b) = Map.delete n (countOccs b)
 
 > tCountOccs :: TExp -> Map Id Int
-> tCountOccs (TExp e) = countOccs e
+> tCountOccs (TExp e _) = countOccs e
 
 Also handy will be extracting all variables free & bound:
 
@@ -230,7 +232,7 @@ To know how which bindings are used only once, count them.
 > inlinables g = asSet $ (== 1) <$> countUses g
 
 > countUses :: HasType a => Graph a -> Map Id Int
-> countUses (e,m) = Map.unionsWith (+) (map tCountOccs (TExp e : Map.keys m))
+> countUses (e,m) = Map.unionsWith (+) (map tCountOccs (tExp e : Map.keys m))
 
 Turn a boolean map (characteristic function) into a set:
 
@@ -247,7 +249,7 @@ Now revisit `undagify`, performing some inlining along the way.
 >    ins :: Set Id
 >    ins = inlinables g
 >    bind :: (Id,TExp) -> E a -> E a
->    bind (name, TExp rhs) = lett' name (inline rhs)
+>    bind (name, TExp rhs _) = lett' name (inline rhs)
 >    -- Inline texps in an expression
 >    inline :: E b -> E b
 >    inline (Var v@(V name _)) | Set.member name ins, Just e' <- tLookup v texps = inline e'
@@ -266,8 +268,8 @@ For the inlining step, we'll have to look up a variable in the map, and check th
 > tLookup (V name tya) m = fromTExp tya <$> Map.lookup name m
 
 > fromTExp :: Type a -> TExp -> E a
-> fromTExp tya (TExp e) | Just Refl <- typeOf1 e `tyEq` tya = e
->                       | otherwise = error "fromTExp type fail"
+> fromTExp tya (TExp e _) | Just Refl <- typeOf1 e `tyEq` tya = e
+>                         | otherwise = error "fromTExp type fail"
 
 I'm not satisfied having to deal the type check explicitly here.
 Maybe a different abstraction would help; perhaps a type-safe homogeneous map instead  of `Map Id TExp`.
