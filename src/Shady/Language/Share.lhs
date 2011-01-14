@@ -63,7 +63,7 @@ A graph is a map from expressions to variable names, plus a root expression (typ
 > type Graph a = (E a, Map TExp Id)
 
 A `TExp` wraps an expression, encapsulating the type.
-I'll also include the `show`, since I use it in comparisons, which I expect to cause it to be accessed repeatedly.
+I'll also include the result of `show`, since I use it in comparisons, which I expect to cause it to be accessed repeatedly.
 
 > data TExp = forall a. HasType a => TExp (E a) String
 

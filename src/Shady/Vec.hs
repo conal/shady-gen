@@ -241,11 +241,19 @@ instance IsNat n => IsNat (S n) where
   pureV a           = a :< pureV a
   elemsV []         = error "elemsV: too few elements"
   elemsV (a : as)   = a :< elemsV as
-  peekV p           = do a  <- peek p
+ peekV p           =  do a  <- peek p
                          as <- peekV (p `plusPtr` sizeOf a)
                          return (a :< as)
+                     -- liftA2 (:<) (peek p) (peekV (succPtr p))
+  -- peekV = (liftA2.liftA2) (:<) peek (peekV . succPtr)
+  -- TODO: Try these niftier peekV definitions
   pokeV p (a :< as) = do poke p a
                          pokeV (p `plusPtr` sizeOf a) as
+
+-- -- Experiment toward simplifying away the plusPtr calls.
+-- succPtr :: forall a. Storable a => Ptr a -> Ptr a
+-- succPtr p = p `plusPtr` sizeOf (undefined :: a)
+
 
 -- TODO: Optimize peekV, pokeV.  For instance, unroll the loop in the
 -- dictionary, remove the sizeOf dependence on @a@.

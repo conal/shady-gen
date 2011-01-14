@@ -44,8 +44,15 @@ import Shady.Language.Operator (Op(Pair,Lit))
 import Shady.Language.Exp hiding ((<+>),get)
 import Shady.Language.Glom
 import Shady.Misc (padTo)
--- import Shady.Language.Cse (cse)
-import Shady.Language.Share (cse)
+
+-- Common sub-expression elimination. Work in progress. The Cse module is
+-- fast but misses some sharing. Share is slow and thorough.
+-- 
+-- TODO: combine the two approaches, using the Cse implementation as a
+-- first pass and the Share implementation as a second.
+
+import Shady.Language.Cse (cse)
+-- import Shady.Language.Share (cse)
 
 {--------------------------------------------------------------------
     Syntax types
