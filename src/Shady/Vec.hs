@@ -241,9 +241,9 @@ instance IsNat n => IsNat (S n) where
   pureV a           = a :< pureV a
   elemsV []         = error "elemsV: too few elements"
   elemsV (a : as)   = a :< elemsV as
- peekV p           =  do a  <- peek p
-                         as <- peekV (p `plusPtr` sizeOf a)
-                         return (a :< as)
+  peekV p           =  do a  <- peek p
+                          as <- peekV (p `plusPtr` sizeOf a)
+                          return (a :< as)
                      -- liftA2 (:<) (peek p) (peekV (succPtr p))
   -- peekV = (liftA2.liftA2) (:<) peek (peekV . succPtr)
   -- TODO: Try these niftier peekV definitions
