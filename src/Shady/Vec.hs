@@ -228,6 +228,19 @@ class {- Typeable n => -} IsNat n where
   peekV  :: Storable a => Ptr a -> IO (Vec n a)
   pokeV  :: Storable a => Ptr a -> Sink (Vec n a)
 
+{-
+-- TODO: remove all but nat from the class. Define the rest outside of the
+-- class by using nat. Then break this module into Nat and Vec. For instance,
+
+pureV :: IsNat n => a -> Vec n a
+pureV = pureN nat
+
+pureN :: Nat n -> a -> Vec n a
+pureN Zero     _ = ZVec
+pureN (Succ n) a = a :< pureN n a
+-}
+
+
 instance IsNat Z where
   nat          = Zero
   pureV _      = ZVec
