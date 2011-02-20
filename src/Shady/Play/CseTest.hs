@@ -23,8 +23,8 @@ import Text.PrettyPrint.Leijen.DocExpr (Expr,HasExpr(expr))
 import Data.Boolean
 
 import Shady.Language.Exp
-import Shady.Color
-import Shady.Image
+-- import Shady.Color
+-- import Shady.Image
 import Shady.Complex
 import Shady.Misc (frac)
 
@@ -34,12 +34,18 @@ import Shady.Language.Share
 x :: HasExpr a => a -> Expr
 x = expr
 
+
+type Point = ComplexE R
+
+
+{-
 xc :: Color -> Expr
 xc = expr . colorToR4
 
 xp :: Point -> Expr
 xp = expr . pointToR2
 
+-}
 
 q :: FloatE
 q = Var (var "q")
@@ -118,25 +124,28 @@ t9b = s + r
 
 w = Var (var "w") :: R2E
 
+{-
+
 bw :: BoolE -> Color
 bw = boolean white clear
 
 
 ra :: R2E -> Color
 ra z = bw (z <.> z <* 1)
-
+-}
 
 stripes (a :+ _) = frac a <* 0.5
 
 a1 :: FloatE
 a1 = magnitudeSq (t *^ uv)
 
+{-
 a2 :: BoolE
 a2 = uscale2 t udisk uv
 
 a3 :: R4E
 a3 = colorToR4 $ toColor (uscale2 (cos t) udisk uv)
-
+-}
 
 
 t :: FloatE
@@ -145,11 +154,9 @@ u,v :: FloatE
 u = Var (var "u")
 v = Var (var "v")
 
+
 uv :: Point
 uv = u :+ v
-
--- Something is going wrong. the uscale2 t is having no effect above.
--- Could the Bool be somehow thwarting?
 
 -------------
 

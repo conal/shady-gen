@@ -20,15 +20,15 @@ import Text.PrettyPrint.Leijen.DocExpr (Expr,HasExpr(expr))
 import Data.Boolean
 
 import Shady.Language.Exp
-import Shady.Image
+-- import Shady.Image
 import Shady.Misc (fmod)
 
 
 x :: HasExpr a => a -> Expr
 x = expr
 
-y :: Point -> Expr
-y = expr . pointToR2
+-- y :: Point -> Expr
+-- y = expr . pointToR2
 
 
 l,m,n :: FloatE
