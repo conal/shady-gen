@@ -1,5 +1,5 @@
 -- {-# LANGUAGE #-}
-{-# OPTIONS_GHC -Wall -fno-warn-orphans #-}
+{-# OPTIONS_GHC -Wall #-}
 ----------------------------------------------------------------------
 -- |
 -- Module      :  Data.NameM
@@ -13,8 +13,6 @@
 ----------------------------------------------------------------------
 
 module Data.NameM (NameM, genName, runNameM, allNames) where
-
-import Control.Applicative (Applicative(..))
 
 import Control.Monad.State
 
@@ -33,12 +31,3 @@ allNames :: [String]
 allNames = map reverse (tail names)
  where
    names = "" : [ c:cs | cs <- names , c <- ['a' .. 'z'] ]
-
-
-
-{--------------------------------------------------------------------
-    Orphan
---------------------------------------------------------------------}
-
-instance Applicative (State s) where
-  pure = return ; (<*>) = ap
