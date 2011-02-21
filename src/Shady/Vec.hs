@@ -61,8 +61,10 @@ import Data.Proof.EQ
     Type-level numbers
 --------------------------------------------------------------------}
 
-data Z                                  -- ^ zero
-data S n                                -- ^ successor
+-- | Type-level representation of zero
+data Z
+-- | Type-level representation of successor
+data S n
 
 -- INSTANCE_TYPEABLE0(Z,zTC ,"Z")
 -- INSTANCE_TYPEABLE1(S,sTC ,"S")
@@ -193,10 +195,14 @@ index3 = succI index2
 
 infixr 5 :<
 
--- | Vectors with type-determined length
+-- | Vectors with type-determined length, having empty vector ('ZVec') and
+-- vector cons ('(:<)').
 data Vec :: * -> * -> * where
-  ZVec :: Vec Z a                       -- ^ empty vector
-  (:<) :: a -> Vec n a -> Vec (S n) a   -- ^ vector cons
+  ZVec :: Vec Z a                       -- -- ^ zero vector
+  (:<) :: a -> Vec n a -> Vec (S n) a   -- -- ^ vector cons
+
+-- TODO: when haddock is fixed, reinstate per-ctor haddock comments and
+-- remove the constructor comments in the data doc.
 
 -- INSTANCE_TYPEABLE2(Vec,vecTC ,"Vec")
 

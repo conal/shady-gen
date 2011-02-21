@@ -205,14 +205,19 @@ pat vname = divvy emptyP typeT
 
 infixl 9 :^
 
--- | Simple expressions (no 'Let').  Statically typed 
+-- | Simple expressions (no 'Let').  Statically typed.
+-- Constructors for operator/constant ('Op'), variable ('Var'),
+-- application ('(:^)'), and abstraction ('Lam').
 data E :: * -> * where
-  Op   :: Op a -> E a                   -- ^ operator/constant
-  Var  :: V  a -> E a                   -- ^ variable
+  Op   :: Op a -> E a                   -- -- ^ operator/constant
+  Var  :: V  a -> E a                   -- -- ^ variable
   (:^) :: HasType a =>
-          E (a -> b) -> E a -> E b      -- ^ application
+          E (a -> b) -> E a -> E b      -- -- ^ application
   Lam  :: HasType a =>
-          V a -> E b -> E (a -> b)      -- ^ abstraction
+          V a -> E b -> E (a -> b)      -- -- ^ abstraction
+
+-- TODO: when haddock is fixed, reinstate per-ctor haddock comments and
+-- remove the constructor comments in the data doc.
 
 instance SynEq E where
   Op o   =-= Op o'   = o =-= o'
@@ -392,15 +397,15 @@ commute _ _                               = mempty
 simple1 :: Op (a -> b) -> a :=>? b
 #ifdef SIMPLIFY
 simple1 Negate (Op Negate :^ a)    = pure a
-simple1 Negate (Op Mul :^ a :^ b)  = pure (negate a * b) -- *
-simple1 Negate (Op Add :^ a :^ b)  = pure (negate a + negate b) -- *
+simple1 Negate (Op Mul :^ a :^ b)  = pure (negate a * b) -- see note
+simple1 Negate (Op Add :^ a :^ b)  = pure (negate a + negate b) -- see note
 simple1 Recip  (Op Recip  :^ a)    = pure a
 simple1 Fst    (Op Pair :^ a :^ _) = pure a
 simple1 Snd    (Op Pair :^ _ :^ b) = pure b
 simple1 Cos    (Op Negate :^ a)    = pure (cos a)
 simple1 Sin    (Op Negate :^ a)    = pure (- sin a)
 
--- * Pushing the negate inward increases opportunities for vectorization,
+-- Note: pushing the negate inward increases opportunities for vectorization,
 -- but can break sharing.  For Add, it also increases cost a bit.
 
 -- TODO: more
