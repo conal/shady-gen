@@ -183,6 +183,7 @@ prettyB withTypes = pret
      where (a,b) = unPair' e
    pret (B (BaseG (V name ty)) e) =
      mbty ty <> text name <+> equals <+> pretty e <> semi
+   mbty :: Type t -> Doc
    mbty ty | withTypes = prettyTy ty <> space
            | otherwise = empty
 

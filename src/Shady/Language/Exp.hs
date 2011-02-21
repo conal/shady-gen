@@ -461,6 +461,7 @@ a <+?> b | n' > 1  -- for glsl 1.2, which doesn't allow swizzling scalars.
  where
    -- With -XNoMonomorphismRestriction, we get an Ambiguous type variable.
    -- If I then add ":: n", ghc doesn't terminate.
+   n :: Nat n
    n  = nat
    n' = natToZ n
    is = indices n
