@@ -40,11 +40,12 @@ module Shady.Language.Type
   -- * Pairing and unit
   , PairF(..), (:#), UnitF(..)
   -- * Re-export
-  , module Shady.Vec
+  , module TypeNat.Vec
   ) where
 
 import Control.Applicative (pure,liftA2,Const(..))
 import Data.Maybe (isJust)
+import Data.Foldable (toList)
 import Data.List (intercalate)
 import Control.Monad.Instances ()
 import Foreign.Storable
@@ -55,8 +56,9 @@ import Text.PrettyPrint.Leijen
 import Text.PrettyPrint.Leijen.PrettyPrec
 import Text.PrettyPrint.Leijen.DocExpr
 
+import TypeNat.Vec
+
 import Shady.Misc (FMod(..),R)
-import Shady.Vec
 import Data.Proof.EQ
 -- import Shady.Language.Equality
 -- import Shady.MechanicsGL (GlTexture)
@@ -353,14 +355,14 @@ class UnitF f where unit :: f ()
 instance (IsNat n, IsScalar a, Pretty a) => Pretty (Vec n a) where
   pretty v | n == 1    = pretty (head as)
            | otherwise = pretty (vectorT :: VectorT n a) <> tupled (map pretty as)
-    where as = vElems v
+    where as = toList v
           n  = length as
 
 instance (IsNat n, IsScalar a, Show a) => Show (Vec n a) where
   show v | n == 1    = show (head as)
          | otherwise = show (vectorT :: VectorT n a)
                        ++ "(" ++ intercalate "," (map show as) ++ ")"
-    where as = vElems v
+    where as = toList v
           n  = length as
 
 instance (IsNat n, IsScalar a, Pretty a) => PrettyPrec (Vec n a)

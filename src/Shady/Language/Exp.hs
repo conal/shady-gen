@@ -80,7 +80,7 @@ import Data.VectorSpace
 import Data.NameM
 import Shady.Language.Type hiding ((<+>),vec2,vec3,vec4,un2,un3,un4,get)
 import Shady.Language.Glom
-import qualified Shady.Vec as V
+import qualified TypeNat.Vec as V
 import Shady.Language.Operator
 import Shady.Misc
 import Shady.Complex

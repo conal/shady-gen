@@ -22,7 +22,7 @@ module Shady.Language.Operator
 import Prelude hiding (all,any)
 
 import Control.Applicative (liftA2)
-import Data.Foldable (all,any)
+import Data.Foldable (all,any,toList)
 
 import Text.PrettyPrint.Leijen.DocExpr
 
@@ -274,7 +274,7 @@ part :: Index m -> Char
 part (Index _ m) = "xyzw" !! fromIntegral (natToZ m)
 
 parts :: Vec n (Index m) -> String
-parts ixs = map part (vElems ixs)
+parts = map part . toList
 
 -- getName :: Index m -> String
 -- getName ix = "GET" ++ [part ix]
@@ -292,7 +292,7 @@ opExpr :: Op z -> [Expr] -> Expr
 opExpr Not  [e]    = fun "!" e
 opExpr Negate [e]  = fun "-" e
 opExpr If [c,t,e]  = ifExpr c t e
-opExpr (Swizzle ixs) [e] = dotX (map part (vElems ixs)) e
+opExpr (Swizzle ixs) [e] = dotX (map part (toList ixs)) e
 opExpr Recip [e]  = lift (1.0 :: Float) / e
 opExpr (UniformV (VectorT (Succ Zero) _)) [e] = e
 opExpr oper [x,y] | Just (ass,p) <- fixity

@@ -1,5 +1,5 @@
 Name:                shady-gen
-Version:             0.5.1
+Version:             0.5.3
 Cabal-Version:       >= 1.2
 Synopsis:            Functional GPU programming - DSEL & compiler
 Category:            Language, GPU
@@ -13,7 +13,7 @@ Author:              Conal Elliott
 Maintainer:          conal@conal.net
 Homepage:            http://haskell.org/haskellwiki/shady
 Package-Url:         http://conal.net/repos/shady-gen
-Copyright:           (c) by Conal Elliott 2009,2010
+Copyright:           (c) by Conal Elliott 2009-2011
 License:             OtherLicense
 License-File:        COPYING
 Stability:           experimental
@@ -26,13 +26,14 @@ Library
                      , applicative-numbers>=0.0.4, vector-space>=0.5.6
                      , TypeCompose >= 0.7
                      , MemoTrie, ty, data-treify, Boolean
+                     , type-nat
 
   Exposed-Modules:
                        Text.PrettyPrint.Leijen.PrettyPrec
                        Text.PrettyPrint.Leijen.DocExpr
                        Data.NameM
                        Shady.Misc
-                       Shady.Vec
+                    -- Shady.Vec
                        Shady.Complex
                        Shady.Language.Type
                        Shady.Language.Glom
