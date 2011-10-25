@@ -80,7 +80,7 @@ import Data.VectorSpace
 import Data.NameM
 import Shady.Language.Type hiding ((<+>),vec2,vec3,vec4,un2,un3,un4,get)
 import Shady.Language.Glom
-import qualified TypeNat.Vec as V
+import qualified TypeUnary.Vec as V
 import Shady.Language.Operator
 import Shady.Misc
 import Shady.Complex
@@ -263,7 +263,7 @@ catFix (Op (Cat (Succ Zero) (Succ Zero) _) :^ a :^ b) =
 catFix (Op (Cat (Succ Zero) _ _) :^ a :^ b) = catFix b >>= consV a
 catFix _ = mempty
 
-consV :: One a :=> Vec n a :=>? (Vec (S n) a)
+consV :: Vec1 a :=> Vec n a :=>? (Vec (S n) a)
 consV a (Op VVec2 :^ b :^ c)      = pure (Op VVec3 :^ a :^ b :^ c)
 consV a (Op VVec3 :^ b :^ c :^ d) = pure (Op VVec4 :^ a :^ b :^ c :^ d)
 consV _ _                         = mempty
@@ -562,7 +562,7 @@ _ `addMul` _ = mempty
 
 -- Proof that an n-vector can be extened by one element
 data CanExtend :: * -> * where
-  CanExtend :: IsNat (n :+: OneT) => CanExtend n
+  CanExtend :: IsNat (n :+: N1) => CanExtend n
 
 canExtend :: forall n. IsNat n => Maybe (CanExtend n)
 canExtend =
@@ -573,7 +573,7 @@ canExtend =
     Succ (Succ (Succ Zero)) -> j
     _                       -> Nothing
  where
-   j :: IsNat (m :+: OneT) => Maybe (CanExtend m)
+   j :: IsNat (m :+: N1) => Maybe (CanExtend m)
    j = Just CanExtend
 
 -- Pull in the type parameter
@@ -696,7 +696,7 @@ pureU x = uniformV' (pureE (vec1 x))
 -- uniformV, then uniformV' becomes the fatal choice in pureU.
 
 uniformV' :: (IsNat n, IsScalar a, Show a) =>
-             One a :=>* Vec n a
+             Vec1 a :=>* Vec n a
 uniformV' = fmapE (UniformV vectorT)
 
 -- Does GLSL have conjunction and disjunction on boolean vectors?  If so,
@@ -884,9 +884,9 @@ type VecE n a = E (Vec n a)
 -- vec1 :: (IsScalar a, Show a) => a :=>* (Vec1 a)
 -- vec1 = fmapE VVec1
 
-vec2 :: (IsScalar a, Show a) => One a :=> One a                     :=>* Two a
-vec3 :: (IsScalar a, Show a) => One a :=> One a :=> One a           :=>* Three a
-vec4 :: (IsScalar a, Show a) => One a :=> One a :=> One a :=> One a :=>* Four a
+vec2 :: (IsScalar a, Show a) => Vec1 a :=> Vec1 a                       :=>* Vec2 a
+vec3 :: (IsScalar a, Show a) => Vec1 a :=> Vec1 a :=> Vec1 a            :=>* Vec3 a
+vec4 :: (IsScalar a, Show a) => Vec1 a :=> Vec1 a :=> Vec1 a :=> Vec1 a :=>* Vec4 a
 
 vec2 a b     = a <+> b
 vec3 a b c   = a <+> vec2 b c
@@ -896,36 +896,36 @@ vec4 a b c d = a <+> vec3 b c d
 -- vec3 = liftE3 VVec3
 -- vec4 = liftE4 VVec4
 
-un2 :: IsScalar a => Two a :=> (E (One a), E (One a))
+un2 :: IsScalar a => Vec2 a :=> (E (Vec1 a), E (Vec1 a))
 un2 u = (getX u, getY u)
 
-un3 :: IsScalar a => Three a :=> (E (One a), E (One a), E (One a))
+un3 :: IsScalar a => Vec3 a :=> (E (Vec1 a), E (Vec1 a), E (Vec1 a))
 un3 u = (getX u, getY u, getZ u)
 
-un4 :: IsScalar a => Four a :=> (E (One a), E (One a), E (One a), E (One a))
+un4 :: IsScalar a => Vec4 a :=> (E (Vec1 a), E (Vec1 a), E (Vec1 a), E (Vec1 a))
 un4 u = (getX u, getY u, getZ u, getW u)
 
 
 -- | Extract X component
 getX :: (IsNat n, IsScalar a, Show a) =>
-        Vec (S n)             a :=>* One a
+        Vec (S n)             a :=>* Vec1 a
 getX = get index0
 -- | Extract Y component
 getY :: (IsNat n, IsScalar a, Show a) =>
-        Vec (S (S n))         a :=>* One a
+        Vec (S (S n))         a :=>* Vec1 a
 getY = get index1
 -- | Extract Z component
 getZ :: (IsNat n, IsScalar a, Show a) =>
-        Vec (S (S (S n)))     a :=>* One a
+        Vec (S (S (S n)))     a :=>* Vec1 a
 getZ = get index2
 -- | Extract W component
 getW :: (IsNat n, IsScalar a, Show a) =>
-        Vec (S (S (S (S n)))) a :=>* One a
+        Vec (S (S (S (S n)))) a :=>* Vec1 a
 getW = get index3
 
 -- | Extract vector component
 get :: (IsNat n, IsScalar a, Show a) =>
-       Index n -> (Vec n a) :=>* One a
+       Index n -> (Vec n a) :=>* Vec1 a
 get i = fmapE (Swizzle (vec1 i))
 
 
@@ -969,12 +969,12 @@ instance PairF E where (#)  = pairE
 
 -- | Uniform version of a function on vectors
 uniform :: (IsNat n, IsScalar a, Show a) =>
-           (E (Vec n a) -> b) -> (E (One a) -> b)
+           (E (Vec n a) -> b) -> (E (Vec1 a) -> b)
 uniform = (.  uniformV)
 
 -- | Uniform vector
 uniformV :: (IsNat n, IsScalar a, Show a) =>
-            One a :=>* Vec n a
+            Vec1 a :=>* Vec n a
 uniformV = fmapE (UniformV vectorT)
 
 
@@ -994,7 +994,7 @@ instance (IsNat n, IsScalar a, Num a) =>
 
 instance (IsNat n, IsScalar a, Num a) =>
          VectorSpace (E (Vec n a)) where
-  type Scalar (E (Vec n a)) = E (One a)
+  type Scalar (E (Vec n a)) = E (Vec1 a)
   s *^ u                      = uniformV s * u
   -- (*^) = liftE2 Scale
 
@@ -1117,10 +1117,10 @@ toFromE = fromE ~> toE
 
 
 -- | Complex-valued expressions
-type ComplexE a = Complex (E (One a))
+type ComplexE a = Complex (E (Vec1 a))
 
 instance (Show a, IsScalar a) => ToE (ComplexE a) where
-  type ExpT (ComplexE a) = Two a
+  type ExpT (ComplexE a) = Vec2 a
   toEN (x :+ y) = return $ x <+> y
 instance (Show a, IsScalar a) => FromE (ComplexE a) where
   fromE c = getX c :+ getY c

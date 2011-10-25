@@ -40,7 +40,7 @@ module Shady.Language.Type
   -- * Pairing and unit
   , PairF(..), (:#), UnitF(..)
   -- * Re-export
-  , module TypeNat.Vec
+  , module TypeUnary.Vec
   ) where
 
 import Control.Applicative (pure,liftA2,Const(..))
@@ -56,7 +56,7 @@ import Text.PrettyPrint.Leijen
 import Text.PrettyPrint.Leijen.PrettyPrec
 import Text.PrettyPrint.Leijen.DocExpr
 
-import TypeNat.Vec
+import TypeUnary.Vec
 
 import Shady.Misc (FMod(..),R)
 import Data.Proof.EQ
@@ -121,9 +121,9 @@ type TextureId = Int
 data Sampler n =
   Sampler { samplerDim :: Nat n, samplerTexture :: TextureId }
 
-type Sampler1 = Sampler OneT
-type Sampler2 = Sampler TwoT
-type Sampler3 = Sampler ThreeT
+type Sampler1 = Sampler N1
+type Sampler2 = Sampler N2
+type Sampler3 = Sampler N3
 
 instance Show (Sampler n) where
   show (Sampler n tex) = "<Sampler "++show n++" "++show tex++">"
@@ -291,16 +291,16 @@ x `compatible1` y = typeOf1 x `tyEq` typeOf1 y
 -- TODO: Maybe move R to Misc and use in defining EyePos in MechanicsGL
 
 -- | Convenient short-hand
-type R1 = One   R
+type R1 = Vec1 R
 -- | Convenient short-hand
-type R2 = Two   R
+type R2 = Vec2 R
 -- | Convenient short-hand
-type R3 = Three R
+type R3 = Vec3 R
 -- | Convenient short-hand
-type R4 = Four  R
+type R4 = Vec4 R
 
 -- | Single boolean
-type B1 = One Bool
+type B1 = Vec1 Bool
 
 -- | Unary predicate
 type Pred1 a = a -> B1

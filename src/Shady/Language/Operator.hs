@@ -98,10 +98,10 @@ data Op   :: * -> * where
   Floor    :: IsNat n => Op (Unop (Vec n R))
   FMod     :: (IsNat n, IsScalar a, FMod a) => Op (Binop (Vec n a))
     -- Vector
-  -- VVec1   :: IsScalar a => Op (One a                         -> One a)
-  VVec2   :: IsScalar a => Op (One a -> One a                   -> Two   a)
-  VVec3   :: IsScalar a => Op (One a -> One a -> One a          -> Three a)
-  VVec4   :: IsScalar a => Op (One a -> One a -> One a -> One a -> Four  a)
+  -- VVec1   :: IsScalar a => Op (Vec1 a                         -> Vec1 a)
+  VVec2   :: IsScalar a => Op (Vec1 a -> Vec1 a                 -> Vec2   a)
+  VVec3   :: IsScalar a => Op (Vec1 a -> Vec1 a -> Vec1 a         -> Vec3 a)
+  VVec4   :: IsScalar a => Op (Vec1 a -> Vec1 a -> Vec1 a -> Vec1 a -> Vec4  a)
   Dot     :: IsNat n => Op (Vec n R -> Vec n R -> R1)
   Swizzle :: (IsNat n, IsNat m, IsScalar a) =>
              Vec n (Index m) -> Op (Vec m a -> Vec n a)
@@ -115,8 +115,8 @@ data Op   :: * -> * where
   Cat      :: (IsNat m, IsNat n, IsNat (m :+: n), IsScalar a) =>
               Nat m -> Nat n -> VectorT (m :+: n) a
            -> Op (Vec m a -> Vec n a -> Vec (m :+: n) a)
-  UniformV :: IsNat n => VectorT n a -> Op (One a -> Vec n a)
-  Scale    :: (IsNat n, Num a, IsScalar a) => Op (One a -> Unop (Vec n a))
+  UniformV :: IsNat n => VectorT n a -> Op (Vec1 a -> Vec n a)
+  Scale    :: (IsNat n, Num a, IsScalar a) => Op (Vec1 a -> Unop (Vec n a))
     -- Misc graphics-specific
   Texture  :: IsNat n => Nat n -> Op (Sampler n -> Vec n R -> R4)
 
@@ -142,16 +142,16 @@ infixL = infixA InfixL
 infixR = infixA InfixR
 infixN = infixA Infix
 
-one1 :: (a -> b) -> a -> One b
+one1 :: (a -> b) -> a -> Vec1 b
 one1 = result vec1
 
-one2 :: (a -> b -> c) -> a -> b -> One c
+one2 :: (a -> b -> c) -> a -> b -> Vec1 c
 one2 = result one1
 
--- in1 :: (a -> b) -> One a -> One b
+-- in1 :: (a -> b) -> Vec1 a -> Vec1 b
 -- in1 = un1 ~> vec1                       -- or fmap
 
--- in2 :: (a -> b -> c) -> One a -> One b -> One c
+-- in2 :: (a -> b -> c) -> Vec1 a -> Vec1 b -> Vec1 c
 -- in2 = un1 ~> in1
 
 -- in1, in2 subsumed by fmap & liftA2.
@@ -256,13 +256,13 @@ condN :: String -> String -> a -> Fixity -> Nat n -> OpInfo a
 condN name1 _ val fixity (Succ Zero) = OpInfo name1 val fixity
 condN _ namen val _      _           = OpInfo namen val nofix
 
-vvec2 :: One a -> One a -> Two a
+vvec2 :: Vec1 a -> Vec1 a -> Vec2 a
 vvec2 a b = un1 a :< b
 
-vvec3 :: One a -> One a -> One a -> Three a
+vvec3 :: Vec1 a -> Vec1 a -> Vec1 a -> Vec3 a
 vvec3 a b c = un1 a :< vvec2 b c
 
-vvec4 :: One a -> One a -> One a -> One a -> Four a
+vvec4 :: Vec1 a -> Vec1 a -> Vec1 a -> Vec1 a -> Vec4 a
 vvec4 a b c d = un1 a :< vvec3 b c d
 
 all', any' :: Vec n Bool -> B1
