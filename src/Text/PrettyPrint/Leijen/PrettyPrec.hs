@@ -54,7 +54,7 @@ instance PrettyPrec Integer
 instance PrettyPrec Float
 instance PrettyPrec Double
 
--- Orphan:
+-- Orphan. Missing from wl-pprint
 instance Integral a => Pretty (Ratio a) where pretty = text . show
 
 instance Pretty a => PrettyPrec [a]
@@ -68,6 +68,13 @@ instance PrettyPrec a => PrettyPrec (Maybe a) where
 
 instance Integral a => PrettyPrec (Ratio a) where
   prettyPrec = const (text . show)
+
+-- TODO: Revisit Ratio. Use p
+
+-- Price to pay for assuming HasExpr is a superclass of HasType. Revisit.
+instance Pretty (a -> b) where
+  pretty = error "PrettyPrec: can't really pretty a function. Sorry."
+instance PrettyPrec (a -> b)
 
 
 {--------------------------------------------------------------------

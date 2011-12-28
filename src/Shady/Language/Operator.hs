@@ -42,7 +42,7 @@ import Shady.Misc
 
 data Op   :: * -> * where
     -- Literal
-  Lit     :: Show a => a -> Op a
+  Lit     :: HasExpr a => a -> Op a  -- was Show =>
     -- Booleans
   -- Hack: say that And/Or work on bool vectors.  Later, revert and
   -- implement the vector versions via the scalar versions.
@@ -165,7 +165,7 @@ data OpInfo a = OpInfo { oiName :: String, oiVal :: a, oiFix :: Fixity }
 
 info :: Op a -> OpInfo a
 
-info (Lit a)  = OpInfo (show a)   a        nofix
+info (Lit a)  = OpInfo (show (expr a))   a        nofix
 
 info And      = OpInfo "(&&)"     (liftA2 (&&))  (infixR 3)
 info Or       = OpInfo "(||)"     (liftA2 (||))  (infixR 2)

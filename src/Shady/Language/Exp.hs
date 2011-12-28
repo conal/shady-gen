@@ -455,7 +455,7 @@ simple4 _ = mempty
 infix 1 <+?>
 (<+?>) :: forall n m a.
           (IsNat n, IsNat m, IsScalar a,
-           IsNat (m :+: n), Show a) =>
+           IsNat (m :+: n) {-, Show a -}) =>
           Vec m a :=> Vec n a :=>? Vec (m :+: n) a
 
 -- Comment out the first rule as a temp work-around for glsl 1.2
@@ -620,7 +620,7 @@ negMul a b = pure (Op Negate :^ (Op Mul :^ a :^ b))
 -- with the arrows being operators.
 
 -- | Literal expression
-pureE :: Show a => a -> E a
+pureE :: HasExpr a => a -> E a
 pureE = Op . Lit
 
 -- | Apply a unary operator, with constant-folding and simplifications
@@ -669,7 +669,7 @@ instance Eq (E a) where
   (==) = noOv "(==)"
   (/=) = noOv "(/=)"
 
-instance (IsNat n, IsScalar a, Ord a, Show a) => Ord (E (Vec n a)) where
+instance (IsNat n, IsScalar a, Ord a {-, Show a -}) => Ord (E (Vec n a)) where
   min = liftE2 Min
   max = liftE2 Max
   (<) = noOv "(<)"
@@ -695,7 +695,7 @@ pureU x = uniformV' (pureE (vec1 x))
 -- change the definition of uniform to use uniformV' instead of
 -- uniformV, then uniformV' becomes the fatal choice in pureU.
 
-uniformV' :: (IsNat n, IsScalar a, Show a) =>
+uniformV' :: (IsNat n, IsScalar a {-, Show a -}) =>
              Vec1 a :=>* Vec n a
 uniformV' = fmapE (UniformV vectorT)
 
@@ -710,7 +710,7 @@ notE = notB
 
 -- TODO: Eliminate notE
 
-instance (IsNat n, IsScalar a, Show a) => IfB BoolE (VecE n a) where
+instance (IsNat n, IsScalar a {-, Show a -}) => IfB BoolE (VecE n a) where
   ifB = liftE3 If
 
 -- -- | Synonym for 'ifB' (transitional)
@@ -722,22 +722,22 @@ instance (IsNat n, IsScalar a, Show a) => IfB BoolE (VecE n a) where
 -- ifE' = boolean
 
 
-instance (IsNat n, IsScalar a, Eq a, Show a) => EqB (VecE n Bool) (VecE n a) where
+instance (IsNat n, IsScalar a, Eq a {- , Show a -}) => EqB (VecE n Bool) (VecE n a) where
   (==*) = liftE2 (EqualV nat)
 
-instance (IsNat n, IsScalar a, Ord a, Show a) =>
+instance (IsNat n, IsScalar a, Ord a {- , Show a -}) =>
          OrdB (VecE n Bool) (VecE n a) where
   (<*) = liftE2 (Lt nat)
 
 infix  4  ==^, /=^
 
 -- | Vector equality, resulting in a single Bool.  See also '(==*)'.
-(==^) :: (IsNat n, IsScalar a, Eq a, Show a) =>
+(==^) :: (IsNat n, IsScalar a, Eq a {- , Show a -}) =>
          Vec n a :=> Vec n a :=>* B1
 (==^) = liftE2 Equal
 
 -- | Vector inequality, resulting in a single Bool.   See also '(/=*)'.
-(/=^) :: (IsNat n, IsScalar a, Eq a, Show a) =>
+(/=^) :: (IsNat n, IsScalar a, Eq a {- , Show a -}) =>
          Vec n a :=> Vec n a :=>* B1
 (/=^) = (result.result) notE (==^)
 
@@ -862,7 +862,7 @@ texture :: IsNat n => Sampler n :=> Vec n R :=>* R4
 texture = liftE2 (Texture nat)
 
 -- | Literal value
-lit :: Show a => a -> E a
+lit :: HasExpr a => a -> E a
 lit = Op . Lit
 
 
@@ -881,12 +881,12 @@ type R4E = E R4
 type VecE n a = E (Vec n a)
 
 
--- vec1 :: (IsScalar a, Show a) => a :=>* (Vec1 a)
+-- vec1 :: (IsScalar a {- , Show a -}) => a :=>* (Vec1 a)
 -- vec1 = fmapE VVec1
 
-vec2 :: (IsScalar a, Show a) => Vec1 a :=> Vec1 a                       :=>* Vec2 a
-vec3 :: (IsScalar a, Show a) => Vec1 a :=> Vec1 a :=> Vec1 a            :=>* Vec3 a
-vec4 :: (IsScalar a, Show a) => Vec1 a :=> Vec1 a :=> Vec1 a :=> Vec1 a :=>* Vec4 a
+vec2 :: (IsScalar a {- , Show a -}) => Vec1 a :=> Vec1 a                       :=>* Vec2 a
+vec3 :: (IsScalar a {- , Show a -}) => Vec1 a :=> Vec1 a :=> Vec1 a            :=>* Vec3 a
+vec4 :: (IsScalar a {- , Show a -}) => Vec1 a :=> Vec1 a :=> Vec1 a :=> Vec1 a :=>* Vec4 a
 
 vec2 a b     = a <+> b
 vec3 a b c   = a <+> vec2 b c
@@ -907,31 +907,31 @@ un4 u = (getX u, getY u, getZ u, getW u)
 
 
 -- | Extract X component
-getX :: (IsNat n, IsScalar a, Show a) =>
+getX :: (IsNat n, IsScalar a {- , Show a -}) =>
         Vec (S n)             a :=>* Vec1 a
 getX = get index0
 -- | Extract Y component
-getY :: (IsNat n, IsScalar a, Show a) =>
+getY :: (IsNat n, IsScalar a {- , Show a -}) =>
         Vec (S (S n))         a :=>* Vec1 a
 getY = get index1
 -- | Extract Z component
-getZ :: (IsNat n, IsScalar a, Show a) =>
+getZ :: (IsNat n, IsScalar a {- , Show a -}) =>
         Vec (S (S (S n)))     a :=>* Vec1 a
 getZ = get index2
 -- | Extract W component
-getW :: (IsNat n, IsScalar a, Show a) =>
+getW :: (IsNat n, IsScalar a {- , Show a -}) =>
         Vec (S (S (S (S n)))) a :=>* Vec1 a
 getW = get index3
 
 -- | Extract vector component
-get :: (IsNat n, IsScalar a, Show a) =>
+get :: (IsNat n, IsScalar a {- , Show a -}) =>
        Index n -> (Vec n a) :=>* Vec1 a
 get i = fmapE (Swizzle (vec1 i))
 
 
 infixl 1 <+>
 -- | Concatenation of vectors
-(<+>) :: (IsNat m, IsNat n, IsNat (m :+: n), IsScalar a, Show a) =>
+(<+>) :: (IsNat m, IsNat n, IsNat (m :+: n), IsScalar a {- , Show a -}) =>
          Vec m a :=> Vec n a :=>* Vec (m :+: n) a
 (<+>) = liftE2 (Cat nat nat vectorT)
 
@@ -950,12 +950,12 @@ pairE = liftE2 Pair
 
 -- | Expression-lifted 'fst'
 fstE :: (HasType a, HasType b {-, Show b -} {-, HasExpr a, HasExpr b-}) =>
-        Show a => E (a,b) -> E a
+        {- Show a => -} E (a,b) -> E a
 fstE = fmapE Fst
 
 -- | Expression-lifted 'snd'
 sndE :: (HasType a, HasType b {-, Show a-} {-, HasExpr a, HasExpr b-}) =>
-        Show b => E (a,b) -> E b
+        {- Show b => -} E (a,b) -> E b
 sndE = fmapE Snd
 
 -- | Unpack a pair
@@ -968,12 +968,12 @@ instance UnitF E where unit = unitE
 instance PairF E where (#)  = pairE
 
 -- | Uniform version of a function on vectors
-uniform :: (IsNat n, IsScalar a, Show a) =>
+uniform :: (IsNat n, IsScalar a {- , Show a -}) =>
            (E (Vec n a) -> b) -> (E (Vec1 a) -> b)
 uniform = (.  uniformV)
 
 -- | Uniform vector
-uniformV :: (IsNat n, IsScalar a, Show a) =>
+uniformV :: (IsNat n, IsScalar a {- , Show a -}) =>
             Vec1 a :=>* Vec n a
 uniformV = fmapE (UniformV vectorT)
 
@@ -1054,8 +1054,8 @@ infixr 1 ##
         NameM (f a) -> NameM (f b) -> NameM (f (a,b))
 (##) = liftM2 (#)
 
-instance ( ToE u, Show (ExpT u), HasType (ExpT u)
-         , ToE v, Show (ExpT v), HasType (ExpT v)
+instance ( ToE u {- , Show (ExpT u) -}, HasType (ExpT u)
+         , ToE v {- , Show (ExpT v) -}, HasType (ExpT v)
          ) => ToE (u,v) where
   type ExpT (u,v) = (ExpT u, ExpT v)
   toEN (u,v) = liftM2 (#) (toEN u) (toEN v)

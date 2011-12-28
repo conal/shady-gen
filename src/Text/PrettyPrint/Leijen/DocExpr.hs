@@ -227,11 +227,17 @@ instance Enum Expr where
 
 -- TODO: sync up names FromExpr and HasExpr
 
--- Value that can be converted to an 'Expr'.  The 'Show' parent is for
+-- Value that can be converted to an 'Expr'.  The 'PrettyPrec' parent is for
 -- convenience.  It lets us use a default for 'expr'.
-class Show a => HasExpr a where
+class PrettyPrec a => HasExpr a where
   expr :: a -> Expr
-  expr = var . show
+  -- expr = var . show
+  expr e = Expr (\ i -> prettyPrec i e)
+
+--   expr e = Expr (flip prettyPrec e)
+--   expr = Expr . flip prettyPrec
+
+-- prettyPrec :: Int -> a -> Doc
 
 -- Grab instances from PrettyPrec:
 
@@ -246,14 +252,18 @@ instance HasExpr Integer where expr = lift
 instance HasExpr Float   where expr = lift
 instance HasExpr Double  where expr = lift
 
-instance (Show a, PrettyPrec a) => HasExpr [a]
+instance PrettyPrec a => HasExpr [a]
   where expr = lift
-instance (Show a, Show b, Pretty a,Pretty b) => HasExpr (a,b) where
+instance (Pretty a,Pretty b) => HasExpr (a,b) where
   expr = lift
-instance (Show a,Show b,Show c,Pretty a,Pretty b,Pretty c) => HasExpr (a,b,c) where
+instance (Pretty a,Pretty b,Pretty c) => HasExpr (a,b,c) where
   expr = lift
-instance (Show a, PrettyPrec a) => HasExpr (Maybe a) where expr = lift
+instance PrettyPrec a => HasExpr (Maybe a) where expr = lift
 instance Integral a => HasExpr (Ratio a) where expr = lift
+
+-- Price to pay for assuming HasExpr is a superclass of HasType. Revisit.
+instance HasExpr (a -> b) where
+  expr = error "DocExpr: can't really pretty a function. Sorry."
 
 
 -- Like 'HasExpr', but for type constructors.

@@ -1,5 +1,5 @@
 Name:                shady-gen
-Version:             0.5.4
+Version:             0.5.5
 Cabal-Version:       >= 1.2
 Synopsis:            Functional GPU programming - DSEL & compiler
 Category:            Language, GPU

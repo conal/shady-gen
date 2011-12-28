@@ -53,8 +53,9 @@ import Hugs.Prelude(Num(fromInt), Fractional(fromDouble))
 import Data.VectorSpace
 
 import Shady.Misc (Unop,Binop,FMod(..),Frac(..))
+import Text.PrettyPrint.Leijen (Pretty(..),text)
 import Text.PrettyPrint.Leijen.DocExpr
-
+import Text.PrettyPrint.Leijen.PrettyPrec (PrettyPrec(..))
 
 infix  6  :+
 
@@ -251,10 +252,19 @@ instance Floating a => Floating (Complex a) where
     Pretty printing
 --------------------------------------------------------------------}
 
--- infix  6  :+
+instance RealFloat a => Pretty (Complex a) where
+  pretty = text . show
 
-instance HasExpr a => HasExpr (Complex a) where
+instance RealFloat a => PrettyPrec (Complex a)
+  -- default
+
+-- TODO: Revisit this instance. Use p
+
+-- infix  6  :+
+instance (RealFloat a, HasExpr a) => HasExpr (Complex a) where
   expr (x :+ y) = op Infix 6 ":+" (expr x) (expr y)
+
+-- TODO: Do I really need HasExpr for Complex? I don't generate them in code.
 
 
 {--------------------------------------------------------------------

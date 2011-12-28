@@ -52,7 +52,7 @@ class FunctorU m => MonadU m where
 data Glom f a where
   BaseG :: f a -> Glom f a
   UnitG :: Glom f ()
-  (:*)  :: (HasType a, HasType b, Show a, Show b) =>
+  (:*)  :: (HasType a, HasType b {- , Show a, Show b -}) =>
            Glom f a -> Glom f b -> Glom f (a,b)
 
 instance UnitF (Glom f) where unit = UnitG

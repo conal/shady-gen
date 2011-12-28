@@ -85,6 +85,7 @@ instance HasExprU ScalarT where
   exprU Float = var "float"
 
 instance Pretty (ScalarT a) where pretty = text . show
+instance PrettyPrec (ScalarT a)
 
 vshow :: Show a => a -> Expr
 vshow = var . show
@@ -112,6 +113,7 @@ showVectorN n p = pref p ++ "vec" ++ show n
     pref Float = ""
 
 instance Pretty (VectorT n a) where pretty = text . show
+instance PrettyPrec (VectorT n a)
 
 -- | Encoding of texture ids in values.  I'm using 'Int' instead of
 -- @GLuint@ here to avoid depending on OpenGL in this module & package.
@@ -130,6 +132,8 @@ instance Show (Sampler n) where
 
 instance Pretty (Sampler n) where
   pretty = text . show
+instance PrettyPrec (Sampler n)
+instance HasExpr (Sampler n)
 
 sampler1 :: TextureId -> Sampler1
 sampler1 = Sampler one                  -- or Sampler nat
@@ -172,7 +176,7 @@ instance Show       (Type t) where show       = show . expr
 -- EXPERIMENTAL: Typeable constraints
 
 -- | Has scalar type
-class (Storable a, Typeable a, Show a) => IsScalar a where scalarT :: ScalarT a
+class (Storable a, Typeable a, PrettyPrec a) => IsScalar a where scalarT :: ScalarT a
 
 -- The Storable and Show prereqs simplify explicit constraints at uses.
 
@@ -185,7 +189,7 @@ vectorT :: (IsNat n, IsScalar a) => VectorT n a
 vectorT = VectorT nat scalarT
 
 -- | Known types
-class Show t => HasType t where typeT :: Type t
+class HasExpr t => HasType t where typeT :: Type t
 
 -- Sorry about that Show constraint.  It's ultimately motivated by
 -- the constant folding optimization and from there creeps into *lots* of contexts.
@@ -370,8 +374,8 @@ instance (IsNat n, IsScalar a, Pretty a) => Pretty (Vec n a) where
 -- this change broke Shady's code generation. Maybe not, if the code
 -- generation uses Pretty instead of Show.
 
-instance (IsNat n, IsScalar a, Pretty a) => PrettyPrec (Vec n a)
-instance (IsNat n, IsScalar a, Show   a) => HasExpr    (Vec n a)
+instance (IsNat n, IsScalar a, Pretty     a) => PrettyPrec (Vec n a)
+instance (IsNat n, IsScalar a, PrettyPrec a) => HasExpr    (Vec n a)
 
 -- Generate bogus Enum instance, needed by 'Integral'
 #define INSTANCE_Enum
