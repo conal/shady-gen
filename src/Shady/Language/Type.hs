@@ -46,7 +46,7 @@ module Shady.Language.Type
 import Control.Applicative (pure,liftA2,Const(..))
 import Data.Maybe (isJust)
 import Data.Foldable (toList)
-import Data.List (intercalate)
+-- import Data.List (intercalate)
 import Control.Monad.Instances ()
 import Foreign.Storable
 
@@ -358,12 +358,17 @@ instance (IsNat n, IsScalar a, Pretty a) => Pretty (Vec n a) where
     where as = toList v
           n  = length as
 
-instance (IsNat n, IsScalar a, Show a) => Show (Vec n a) where
-  show v | n == 1    = show (head as)
-         | otherwise = show (vectorT :: VectorT n a)
-                       ++ "(" ++ intercalate "," (map show as) ++ ")"
-    where as = toList v
-          n  = length as
+-- instance (IsNat n, IsScalar a, Show a) => Show (Vec n a) where
+--   show v | n == 1    = show (head as)
+--          | otherwise = show (vectorT :: VectorT n a)
+--                        ++ "(" ++ intercalate "," (map show as) ++ ")"
+--     where as = toList v
+--           n  = length as
+
+-- 2011-10-26: I removed the Show instance above in favor of a new
+-- Haskell-eval'able Show instance in TypeUnary.Vec. To do: check whether
+-- this change broke Shady's code generation. Maybe not, if the code
+-- generation uses Pretty instead of Show.
 
 instance (IsNat n, IsScalar a, Pretty a) => PrettyPrec (Vec n a)
 instance (IsNat n, IsScalar a, Show   a) => HasExpr    (Vec n a)

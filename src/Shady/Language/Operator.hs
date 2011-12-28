@@ -21,7 +21,7 @@ module Shady.Language.Operator
 
 import Prelude hiding (all,any)
 
-import Control.Applicative (liftA2)
+import Control.Applicative (pure,liftA2)
 import Data.Foldable (all,any,toList)
 
 import Text.PrettyPrint.Leijen.DocExpr
@@ -230,10 +230,10 @@ info Pair     = OpInfo "(#)"      (,)      (infixR 1)
 info Fst      = OpInfo "fst"      fst      nofix
 info Snd      = OpInfo "snd"      snd      nofix
 
-info If           = OpInfo "cond"     if'           nofix
-info (Cat _ _  t) = OpInfo (show t)   (<+>)         nofix
-info (UniformV t) = OpInfo (show t)   (pureV . un1) nofix
-info Scale        = OpInfo "(*)"      (*^)          (infixR 7)
+info If           = OpInfo "cond"     if'          nofix
+info (Cat _ _  t) = OpInfo (show t)   (<+>)        nofix
+info (UniformV t) = OpInfo (show t)   (pure . un1) nofix
+info Scale        = OpInfo "(*)"      (*^)         (infixR 7)
 
 info (Texture n) = OpInfo ("texture" ++ show n ++ "D") texture nofix
 
