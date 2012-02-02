@@ -24,11 +24,11 @@ Source-Repository head
 Library
   hs-Source-Dirs:      src
 
-  Build-Depends:       base >=4 && < 5, containers, mtl, wl-pprint
-                     , applicative-numbers>=0.0.4, vector-space>=0.5.6
+  Build-Depends:       base >=4 && < 5, containers, mtl >= 2 , wl-pprint
+                     , applicative-numbers>=0.0.4, vector-space>=0.8.0
                      , TypeCompose >= 0.7
                      , MemoTrie, ty, data-treify, Boolean
-                     , type-unary >= 0.1.13
+                     , type-unary >= 0.1.15
 
   Exposed-Modules:
                        Text.PrettyPrint.Leijen.PrettyPrec
