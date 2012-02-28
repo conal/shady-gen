@@ -114,7 +114,7 @@ unGraph (Graph binds root) = foldr llet (var' root) (reverse binds)
 abstractable :: forall a. HasType a => a -> Bool
 abstractable a = 
    case (typeOf a :: Type a) of
-     VecT (VectorT n _) -> natToZ n > 1
+     VecT (VectorT n _) -> (natToZ n :: Int) > 1
      _                  -> False
 
 -- | Common subexpression elimination.  Use with care, since it breaks

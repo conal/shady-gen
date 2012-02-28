@@ -259,7 +259,7 @@ instance (Pretty a,Pretty b) => HasExpr (a,b) where
 instance (Pretty a,Pretty b,Pretty c) => HasExpr (a,b,c) where
   expr = lift
 instance PrettyPrec a => HasExpr (Maybe a) where expr = lift
-instance Integral a => HasExpr (Ratio a) where expr = lift
+instance (Show a, Integral a) => HasExpr (Ratio a) where expr = lift
 
 -- Price to pay for assuming HasExpr is a superclass of HasType. Revisit.
 instance HasExpr (a -> b) where

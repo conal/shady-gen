@@ -1,4 +1,5 @@
-{-# LANGUAGE TypeOperators, CPP, DeriveDataTypeable, TypeFamilies #-}
+{-# LANGUAGE TypeOperators, CPP, TypeFamilies
+  , DeriveDataTypeable, StandaloneDeriving #-}
 {-# OPTIONS_GHC -Wall #-}
 -----------------------------------------------------------------------------
 -- |
@@ -109,8 +110,8 @@ cis theta        =  cos theta :+ sin theta
 -- the magnitude is nonnegative, and the phase in the range @(-'pi', 'pi']@;
 -- if the magnitude is zero, then so is the phase.
 {-# SPECIALISE polar :: Complex Double -> (Double,Double) #-}
-polar            :: Floating a => Complex a -> (a,a)
-polar z          =  (magnitude z, phase z)
+polar :: (Eq a, Floating a) => Complex a -> (a,a)
+polar z =  (magnitude z, phase z)
 
 
 -- | Operate on the real & imaginary components
@@ -121,15 +122,16 @@ onRI f (x :+ y) = f x :+ f y
 onRI2 :: Binop a -> Binop (Complex a)
 onRI2 f (x :+ y) (x' :+ y') = f x x' :+ f y y'
 
-instance Floating a => AdditiveGroup (Complex a) where
+instance (Eq a, Floating a) => AdditiveGroup (Complex a) where
+  -- About Eq: see the comment on the Num instance for Complex. Reconsider.
   { zeroV = 0 ; negateV = negate ; (^+^) = (+) }
 
-instance Floating a => VectorSpace (Complex a) where
+instance (Eq a, Floating a) => VectorSpace (Complex a) where
   type Scalar (Complex a) = a
   -- s *^ (x :+ y) = s * x :+ s * y
   (*^) s = onRI (s *)
 
-instance Floating a => InnerSpace (Complex a) where
+instance (Eq a, Floating a) => InnerSpace (Complex a) where
   (x :+ y) <.> (x' :+ y') = x*x' + y*y'
 
 
@@ -168,7 +170,9 @@ atan2' y x = atan (y/x)
 #include "Typeable.h"
 INSTANCE_TYPEABLE1(Complex,complexTc,"Complex")
 
-instance Floating a => Num (Complex a)  where
+instance (Eq a, Floating a) => Num (Complex a)  where
+    -- The Eq here is needed with GHC 7.4.1 & later, given the signum
+    -- (0:+0) case. Reconsider that case.
     {-# SPECIALISE instance Num (Complex Float) #-}
     {-# SPECIALISE instance Num (Complex Double) #-}
     (x:+y) + (x':+y')   =  (x+x') :+ (y+y')
@@ -183,7 +187,7 @@ instance Floating a => Num (Complex a)  where
     fromInt n           =  fromInt n :+ 0
 #endif
 
-instance Floating a => Fractional (Complex a)  where
+instance (Eq a, Floating a) => Fractional (Complex a)  where
     {-# SPECIALISE instance Fractional (Complex Float) #-}
     {-# SPECIALISE instance Fractional (Complex Double) #-}
 
@@ -200,7 +204,7 @@ instance Floating a => Fractional (Complex a)  where
     fromDouble a        =  fromDouble a :+ 0
 #endif
 
-instance Floating a => Floating (Complex a) where
+instance (Eq a, Floating a) => Floating (Complex a) where
     {-# SPECIALISE instance Floating (Complex Float) #-}
     {-# SPECIALISE instance Floating (Complex Double) #-}
     pi             =  pi :+ 0
@@ -252,16 +256,16 @@ instance Floating a => Floating (Complex a) where
     Pretty printing
 --------------------------------------------------------------------}
 
-instance RealFloat a => Pretty (Complex a) where
+instance (Show a, RealFloat a) => Pretty (Complex a) where
   pretty = text . show
 
-instance RealFloat a => PrettyPrec (Complex a)
+instance (Show a, RealFloat a) => PrettyPrec (Complex a)
   -- default
 
 -- TODO: Revisit this instance. Use p
 
 -- infix  6  :+
-instance (RealFloat a, HasExpr a) => HasExpr (Complex a) where
+instance (Show a, RealFloat a, HasExpr a) => HasExpr (Complex a) where
   expr (x :+ y) = op Infix 6 ":+" (expr x) (expr y)
 
 -- TODO: Do I really need HasExpr for Complex? I don't generate them in code.

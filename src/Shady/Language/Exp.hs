@@ -271,8 +271,8 @@ consV _ _                         = mempty
 -- e.g., foo.xyz --> foo if foo is 3D
 swizzleOpt :: forall n m a. (IsNat m, IsNat n) =>
               Vec n (Index m) -> E (Vec m a) -> Maybe (E (Vec n a))
-swizzleOpt ixs v | Just Refl <- m `natEq` n, ixs == indices n = Just v
-                 | otherwise                                  = Nothing
+swizzleOpt ixs v | Just Refl <- m `natEq` n, ixs == indices = Just v
+                 | otherwise                                = Nothing
  where
    m = nat :: Nat m
    n = nat :: Nat n
@@ -468,15 +468,17 @@ a <+?> b | n' > 1  -- for glsl 1.2, which doesn't allow swizzling scalars.
    -- If I then add ":: n", ghc doesn't terminate.
    n :: Nat n
    n  = nat
+   n' :: Int
    n' = natToZ n
-   is = indices n
+   is :: Vec n (Index n)
+   is = indices
 
 -- a <+> a.js = a.(all<+>js)
 a <+?> Op (Swizzle js) :^ b | Just Refl <- a =:= b =
-  pure (Op (Swizzle (indices nat V.<+> js)) :^ a)
+  pure (Op (Swizzle (indices V.<+> js)) :^ a)
 -- a.is <+> a = a.(is<+>all)
 Op (Swizzle is) :^ a <+?> b | Just Refl <- a =:= b =
-  pure (Op (Swizzle (is V.<+> indices nat)) :^ a)
+  pure (Op (Swizzle (is V.<+> indices)) :^ a)
 -- a.is <+> a.js = a.(is<+>js)
 Op (Swizzle is) :^ a <+?> Op (Swizzle js) :^ b
   | Just Refl <- a =:= b
@@ -752,7 +754,7 @@ instance Enum a => Enum (E a) where
   enumFromTo     = noOv "enumFromTo"
   enumFromThenTo = noOv "enumFromThenTo"
 
-instance (IsNat n, IsScalar a, Num a) =>
+instance (IsNat n, IsScalar a, Eq a, Num a) =>
          Num (E (Vec n a)) where
   fromInteger = pureE . fromInteger
   negate      = fmapE  Negate
@@ -778,11 +780,11 @@ instance (IsNat n, IsScalar b, Integral b) =>
 both :: (a -> b -> c) -> (a -> b -> c') -> (a -> b -> (c,c'))
 both f g a b = (f a b, g a b)
 
-instance (IsNat n, IsScalar b, Fractional b) => Fractional (E (Vec n b)) where
+instance (IsNat n, IsScalar b, Eq b, Fractional b) => Fractional (E (Vec n b)) where
   recip        = fmapE Recip
   fromRational = pureE . fromRational
 
-instance (IsNat n, IsScalar b, Floating b) => Floating (E (Vec n b)) where
+instance (IsNat n, IsScalar b, Eq b, Floating b) => Floating (E (Vec n b)) where
   pi    = pureE pi
   sqrt  = fmapE Sqrt
   exp   = fmapE Exp
@@ -982,7 +984,7 @@ uniformV = fmapE (UniformV vectorT)
     AdditiveGroup and VectorSpace
 --------------------------------------------------------------------}
 
-instance (IsNat n, IsScalar a, Num a) =>
+instance (IsNat n, IsScalar a, Eq a, Num a) =>
          AdditiveGroup (E (Vec n a)) where
   zeroV   = pureE  0
   (^+^)   = liftE2 Add
@@ -992,10 +994,10 @@ instance (IsNat n, IsScalar a, Num a) =>
 -- operators for AdditiveGroup and VectorSpace, so I won't have to add
 -- rules for them.  Maybe just add the rules.
 
-instance (IsNat n, IsScalar a, Num a) =>
+instance (IsNat n, IsScalar a, Eq a, Num a) =>
          VectorSpace (E (Vec n a)) where
   type Scalar (E (Vec n a)) = E (Vec1 a)
-  s *^ u                      = uniformV s * u
+  s *^ u                    = uniformV s * u
   -- (*^) = liftE2 Scale
 
 instance IsNat n => InnerSpace (E (Vec n R)) where

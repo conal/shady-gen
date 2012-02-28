@@ -63,34 +63,34 @@ data Op   :: * -> * where
   Min     :: (IsNat n, IsScalar a, Ord a) => Op (Binop (Vec n a))
   Max     :: (IsNat n, IsScalar a, Ord a) => Op (Binop (Vec n a))
     -- Num
-  Negate  :: (IsNat n, IsScalar a, Num a) => Op (Unop  (Vec n a))
-  Add     :: (IsNat n, IsScalar a, Num a) => Op (Binop (Vec n a))
-  Sub     :: (IsNat n, IsScalar a, Num a) => Op (Binop (Vec n a))
-  Mul     :: (IsNat n, IsScalar a, Num a) => Op (Binop (Vec n a))
-  Abs     :: (IsNat n, IsScalar a, Num a) => Op (Unop  (Vec n a))
-  Signum  :: (IsNat n, IsScalar a, Num a) => Op (Unop  (Vec n a))
+  Negate  :: (IsNat n, IsScalar a, Eq a, Num a) => Op (Unop  (Vec n a))
+  Add     :: (IsNat n, IsScalar a, Eq a, Num a) => Op (Binop (Vec n a))
+  Sub     :: (IsNat n, IsScalar a, Eq a, Num a) => Op (Binop (Vec n a))
+  Mul     :: (IsNat n, IsScalar a, Eq a, Num a) => Op (Binop (Vec n a))
+  Abs     :: (IsNat n, IsScalar a, Eq a, Num a) => Op (Unop  (Vec n a))
+  Signum  :: (IsNat n, IsScalar a, Eq a, Num a) => Op (Unop  (Vec n a))
     -- Integral
-  Quot     :: (IsNat n, IsScalar a, Integral a) => Op (Binop (Vec n a))
-  Rem      :: (IsNat n, IsScalar a, Integral a) => Op (Binop (Vec n a))
-  Div      :: (IsNat n, IsScalar a, Integral a) => Op (Binop (Vec n a))
-  Mod      :: (IsNat n, IsScalar a, Integral a) => Op (Binop (Vec n a))
+  Quot     :: (IsNat n, IsScalar a, Eq a, Integral a) => Op (Binop (Vec n a))
+  Rem      :: (IsNat n, IsScalar a, Eq a, Integral a) => Op (Binop (Vec n a))
+  Div      :: (IsNat n, IsScalar a, Eq a, Integral a) => Op (Binop (Vec n a))
+  Mod      :: (IsNat n, IsScalar a, Eq a, Integral a) => Op (Binop (Vec n a))
     -- Fractional
-  Recip    :: (IsNat n, IsScalar a, Fractional a) => Op (Unop  (Vec n a))
-  Divide   :: (IsNat n, IsScalar a, Fractional a) => Op (Binop (Vec n a))
+  Recip    :: (IsNat n, IsScalar a, Eq a, Fractional a) => Op (Unop  (Vec n a))
+  Divide   :: (IsNat n, IsScalar a, Eq a, Fractional a) => Op (Binop (Vec n a))
     -- Floating
-  Sqrt     :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Exp      :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Log      :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Sin      :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Cos      :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Asin     :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Atan     :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Acos     :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Sinh     :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Cosh     :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Asinh    :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Atanh    :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
-  Acosh    :: (IsNat n, IsScalar a, Floating a) => Op (Unop (Vec n a))
+  Sqrt     :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Exp      :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Log      :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Sin      :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Cos      :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Asin     :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Atan     :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Acos     :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Sinh     :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Cosh     :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Asinh    :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Atanh    :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
+  Acosh    :: (IsNat n, IsScalar a, Eq a, Floating a) => Op (Unop (Vec n a))
     -- RealFrac
   Truncate :: IsNat n => Op (Unop (Vec n R))
   Round    :: IsNat n => Op (Unop (Vec n R))
@@ -271,7 +271,7 @@ any' = vec1 . any id
 
 -- Part name
 part :: Index m -> Char
-part (Index _ m) = "xyzw" !! fromIntegral (natToZ m)
+part (Index _ m) = "xyzw" !! natToZ m
 
 parts :: Vec n (Index m) -> String
 parts = map part . toList
