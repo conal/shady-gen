@@ -5,10 +5,10 @@
 -- Module      :  Data.NatTrie
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPL-3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Tries on functions from typed numbers
 ----------------------------------------------------------------------
 
@@ -61,8 +61,8 @@ memo' h = SM.memo h
 -- SM.memo h ::
 
 -- "Quantified type variable `n' escapes":
--- 
--- memo = untrie . trie 
+--
+-- memo = untrie . trie
 
 nats :: NatTrie Nat
 nats = trie id
@@ -70,4 +70,4 @@ nats = trie id
 canonicalNat :: NatFun Nat
 canonicalNat = memo id
 
--- 
+--

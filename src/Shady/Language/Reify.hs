@@ -9,10 +9,10 @@
 -- Module      :  Shady.Language.Reify
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Discover representation sharing in expressions
 -- Variation on Andy Gill's Data.Reify.
 ----------------------------------------------------------------------
@@ -58,7 +58,7 @@ findNodes rt1 rt2 ea =
                case mylookup st tab of
                  Just i -> do putMVar rt1 tab
                               return $ i
-                 Nothing -> 
+                 Nothing ->
                    do i <- newIndex
                       putMVar rt1 $
                         M.insertWith (++) (hashStableName st) [StableBind i st] tab
@@ -77,6 +77,6 @@ mylookup sta tab =
    tya = typeT
    llookup :: [StableBind] -> Maybe NodeId
    llookup [] = Nothing
-   llookup (StableBind i stb : binds') 
+   llookup (StableBind i stb : binds')
      | Just Refl <- tya `tyEq` typeOf2 stb, sta == stb = Just i
      | otherwise                                       = llookup binds'

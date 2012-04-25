@@ -7,12 +7,12 @@
 -- Module      :  Shady.Language.Cse
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Common subexpression elimination.
--- 
+--
 -- TODO: Improve variable names (now \"x8\" etc).
 ----------------------------------------------------------------------
 
@@ -112,7 +112,7 @@ unGraph (Graph binds root) = foldr llet (var' root) (reverse binds)
 
 -- Possible and worthwhile to abstract.
 abstractable :: forall a. HasType a => a -> Bool
-abstractable a = 
+abstractable a =
    case (typeOf a :: Type a) of
      VecT (VectorT n _) -> natToZ n > 1
      _                  -> False
@@ -167,23 +167,23 @@ e3 = va + va :: E I1
 
 -- > e2
 -- (a + b) * (a + b)
--- 
+--
 -- > reify e2
 -- let [0 = App x1 x3,1 = App x2 x3,3 = App x4 x7,7 = VN b,4 = App x5 x6,6 = VN a,5 = ON (+),2 = ON (*)] in x0
--- 
+--
 -- > ssa e2
--- let x2 = (*) in 
---   let x5 = (+) in 
---     let x6 = a in 
---       let x4 = x5 x6 in 
---         let x7 = b in 
---           let x3 = x4 x7 in 
---             let x1 = x2 x3 in 
---               let x0 = x1 x3 in 
+-- let x2 = (*) in
+--   let x5 = (+) in
+--     let x6 = a in
+--       let x4 = x5 x6 in
+--         let x7 = b in
+--           let x3 = x4 x7 in
+--             let x1 = x2 x3 in
+--               let x0 = x1 x3 in
 --                 x0
--- 
+--
 -- > cse e2
--- let x3 = a + b in 
+-- let x3 = a + b in
 --   x3 * x3
 
 

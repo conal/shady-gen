@@ -5,10 +5,10 @@
 -- Module      :  Shady.Language.Graph
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Based on a typed variant of Andy Gill's data-reify.  After several
 -- tries, I wasn't able to reuse data-reify or my typed variant of it.
 -- The problem was that I need my 'HasType' class and 'Type' type, but I
@@ -16,7 +16,7 @@
 ----------------------------------------------------------------------
 
 module Shady.Language.Graph
-  ( 
+  (
   -- * Typed identifiers
     NodeId, Tid(..)
   -- * Graph nodes
@@ -86,7 +86,7 @@ app f u = fmap (flip Tid (typeOf1 u)) (f u)
     Bindings
 --------------------------------------------------------------------}
 
--- | Binding pair 
+-- | Binding pair
 data Bind = forall a. HasType a => Bind NodeId (N a)
 
 instance Show Bind where

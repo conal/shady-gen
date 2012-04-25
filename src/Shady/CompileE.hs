@@ -6,12 +6,12 @@
 -- Module      :  Shady.CompileE
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Generate and compile vertex and fragment shaders.
--- 
+--
 -- In this version, shader programs are represented by functions function
 -- a single expression to a single expression.  See also CompileEs, which
 -- allows functions between more flexible representations.
@@ -64,9 +64,9 @@ type v :-* o = v :=>* (R4,o)
 -- | For building vertex/fragment shader pairs.  The idea is that a
 -- complete parameterized shader program has type @u :=> a :- v :--> o@,
 -- which expands to @u :=> (a :-^> v, v :-* o)@.
--- 
+--
 -- u == uniform, a == (vertex) attribute, v == varying, o == fragment output.
--- 
+--
 -- When @o == ()@ (color-only output), use the short-hand @u :=> a :-> v@.
 
 -- | General vertex/fragment shader pair.
@@ -96,14 +96,14 @@ shaderProgram uav =
   case uav (patE u) of
     ShaderVF vert frag ->
       let v = pat "_varying"
-          
+
           vertOut = vert (patE a)
           fragOut = frag (patE v)
-          
+
           uD = D [ Uniform ] u
           aD = D [Attribute] a
           vD = D [ Varying ] v
-          
+
           vsh = shader [uD,aD,vD] (glPosition  :* v    ) vertOut
           fsh = shader [uD,   vD] (glFragColor :* UnitG) fragOut
       in
@@ -127,7 +127,7 @@ data ShaderExe u a =
   ShaderExe { xSelect :: IO ()           -- ^ install this exe
             , xSinkU  :: Sink u          -- ^ set uniform
             , xsinkA  :: Sink [a]        -- ^ set attribute
-            } 
+            }
 
 sinker :: GLSL u a -> IO (ShaderExe u a)
 sinker (GLSL vsh fsh u a) =

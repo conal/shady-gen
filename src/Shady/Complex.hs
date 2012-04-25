@@ -1,11 +1,11 @@
-{-# LANGUAGE TypeOperators, CPP, DeriveDataTypeable, TypeFamilies #-}
+{-# LANGUAGE TypeOperators, CPP, DeriveDataTypeable, TypeFamilies, StandaloneDeriving #-}
 {-# OPTIONS_GHC -Wall #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Data.Complex
 -- Copyright   :  (c) The University of Glasgow 2001, Conal Elliott 2009
 -- License     :  BSD-style
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  provisional
 -- Portability :  portable

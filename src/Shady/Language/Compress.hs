@@ -9,10 +9,10 @@
 -- Module      :  Graphics.Shady.Language.Compress
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPL-3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Compress expressions.  Replaces equal expressions by pointer-equal
 -- expressions.  Uses "Data.StableMemo" so that already-pointer-equal
 -- expressions are not repeatedly traversed.
@@ -55,7 +55,7 @@ type VT = forall a. HasType a => Id -> Type a -> V a
 
 infixl 9 :^
 
--- | Simple expressions (no 'Let').  Statically typed 
+-- | Simple expressions (no 'Let').  Statically typed
 data E :: * -> * where
   Op   :: Op a -> E a                   -- ^ operator/constant
   Var  :: V  a -> E a                   -- ^ variable
@@ -92,7 +92,7 @@ compressE e = mCopyE e
    copyE (Lam v b) = mLam (mCopyV v) (mCopyE b)
    copyE (Var v)   = mVar (mCopyV v)
    copyE (Op  o)   = mOp  (mCopyO o)
-   
+
    mCopyO, copyO :: UnopT Op
    mCopyO = memo copyO
    -- Copier, with memo-copied components
@@ -100,7 +100,7 @@ compressE e = mCopyE e
 --    copyO And     = mAnd
    -- TODO: fill in
    copyO o = o
-   
+
    mCopyV, copyV :: UnopT V
    mCopyV = memo copyV
    copyV (V str ty) = mV (mCopyString str) (mCopyTy ty)
@@ -124,7 +124,7 @@ compressE e = mCopyE e
    mOp  = memo Op
    mVar :: VarT
    mVar  = memo Var
-   
+
    mSamplerT :: SamplerTT
    mSamplerT = undefined
                -- memoST SamplerT
@@ -195,7 +195,7 @@ inH :: (H' a -> H' a) -> (H a -> H a)
 inH h z = H (h (unH z))
 
 -- "Inferred type is less polymorphic than expected":
--- 
+--
 --     inH f = H . f . unH
 --     inH = unH ~> H
 
@@ -208,7 +208,7 @@ memoAT :: AppT -> AppT
 memoAT app = fromAppP (memoAppP (toAppP app))
 
 -- Inferred type is less polymorphic than expected:
--- 
+--
 --     memoAT = fromAppP . memo . toAppP
 
 -- TODO: generate toAppP and fromAppP together.  Revisit Data.Bijection

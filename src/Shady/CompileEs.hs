@@ -7,10 +7,10 @@
 -- Module      :  Shady.CompileEs
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Generate and compile vertex and fragment shaders.  Unlike
 -- "Shady.CompileE", this version allows a looser structure to
 -- the inputs & outputs of shaders, according to 'FromE'.  You can use

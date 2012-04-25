@@ -5,10 +5,10 @@
 -- Module      :  Data.StableMemo
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Memoization based using stable names.  WHNFs keys.
 ----------------------------------------------------------------------
 

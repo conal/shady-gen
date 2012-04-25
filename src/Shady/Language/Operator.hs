@@ -7,10 +7,10 @@
 -- Module      :  Shady.Language.Operator
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Known constants
 ----------------------------------------------------------------------
 
@@ -223,7 +223,7 @@ info VVec4 = OpInfo "vec4" vvec4 nofix
 info Dot   = OpInfo "dot"  (<.>) nofix
 -- info (Dot n)   = condN "(*)" "dot"  (<.>) (infixL 7) n
 
-info (Swizzle ixs) = OpInfo (swizzleName ixs) (swizzle ixs) nofix 
+info (Swizzle ixs) = OpInfo (swizzleName ixs) (swizzle ixs) nofix
 
 info Unit     = OpInfo "()"       ()       nofix
 info Pair     = OpInfo "(#)"      (,)      (infixR 1)
@@ -329,7 +329,7 @@ opEq :: Op a -> Op b -> Bool
 oper `opEq` oper' = oiName (info oper) == oiName (info oper')
 
 -- A polymorphism variant doesn't work:
--- 
+--
 --   opEq = (==) `on` (oiName . info)
 
 instance SynEq Op where (=-=) = opEq

@@ -5,10 +5,10 @@
 -- Module      :  Data.AltNatTrie
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPL-3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Tries on functions from typed numbers
 ----------------------------------------------------------------------
 
@@ -49,5 +49,5 @@ trie h n = NT (h n) (trie h (Succ n))
 -- -- same result but work faster.
 
 -- -- "Quantified type variable `n' escapes":
--- -- 
--- -- memo = untrie . trie 
+-- --
+-- -- memo = untrie . trie

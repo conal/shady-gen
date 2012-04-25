@@ -12,15 +12,15 @@
 -- Module      :  Shady.Language.Type
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Types
 ----------------------------------------------------------------------
 
 module Shady.Language.Type
-  ( 
+  (
   -- * Type values
     ScalarT(..), VectorT(..), Type(..)
   , TextureId, Sampler(..), sampler1, sampler2, sampler3, Sampler1, Sampler2, Sampler3
@@ -36,7 +36,7 @@ module Shady.Language.Type
   -- * Convenient type synonyms
   , R, R1, R2, R3, R4, B1, Pred1, Pred2
   -- * Notions of equality
-  , SynEq(..),SynEq2(..) 
+  , SynEq(..),SynEq2(..)
   -- * Pairing and unit
   , PairF(..), (:#), UnitF(..)
   -- * Re-export

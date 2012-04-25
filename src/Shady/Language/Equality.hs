@@ -5,15 +5,15 @@
 -- Module      :  Graphics.Shady.Language.Equality
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPL-3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Forms of equality
 ----------------------------------------------------------------------
 
-module Graphics.Shady.Language.Equality 
-  -- (SynEq(..),SynEq2(..)) 
+module Graphics.Shady.Language.Equality
+  -- (SynEq(..),SynEq2(..))
   where
 
 {-

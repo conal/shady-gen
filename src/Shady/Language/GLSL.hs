@@ -5,10 +5,10 @@
 -- Module      :  Shady.Language.GLSL
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Abstract syntax for GLSL.  Evolving.
 ----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ import Shady.Misc (padTo)
 
 -- Common sub-expression elimination. Work in progress. The Cse module is
 -- fast but misses some sharing. Share is slow and thorough.
--- 
+--
 -- TODO: combine the two approaches, using the Cse implementation as a
 -- first pass and the Share implementation as a second.
 
@@ -240,7 +240,7 @@ instance Pretty Program where
 
 
 {--------------------------------------------------------------------
-    
+
 --------------------------------------------------------------------}
 
 -- | Binding with open (exposed) type.  Build with '(=::)' and '(#)'.
@@ -290,7 +290,7 @@ scoped d = braces (nest 4 (line <> d) <> line)
 
 -- The following alternative doesn't quite work, since the nesting happens
 -- after the first line break and so doesn't apply to the first line.
--- 
+--
 --   scoped = braces . newlines . nest 4
 --    where
 --      -- Like braces, parens, ...

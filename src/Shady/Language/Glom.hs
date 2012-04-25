@@ -10,10 +10,10 @@
 -- Module      :  Shady.Language.Glom
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Typed conglomerate of values
 ----------------------------------------------------------------------
 
@@ -97,11 +97,11 @@ instance (HasExpr a, HasExprU f) => HasExpr (Glom f a) where expr = exprU
 
 -- Idea: convert a glom into a Doc glom.
 
-instance (HasExpr a, HasExprU f) => PrettyPrec (Glom f a) where 
+instance (HasExpr a, HasExprU f) => PrettyPrec (Glom f a) where
   prettyPrec p = prettyPrec p . expr
-instance (HasExpr a, HasExprU f) => Pretty     (Glom f a) where 
+instance (HasExpr a, HasExprU f) => Pretty     (Glom f a) where
   pretty       = prettyPrec 0
-instance (HasExpr a, HasExprU f) => Show       (Glom f a) where 
+instance (HasExpr a, HasExprU f) => Show       (Glom f a) where
   show         = show . pretty
 
 
@@ -130,7 +130,7 @@ instance (Glommable ua f a, Glommable ub f b, HasExpr a, HasExpr b) =>
   glom (ua,ub)  = glom ua :* glom ub
 
 -- Template to specialize per f:
--- 
+--
 --   instance Glommable (f a) f a where glom = BaseG
 
 class Unglommable u f a | a f -> u where
@@ -144,7 +144,7 @@ instance (Unglommable ua f a, Unglommable ub f b) =>
   unglom _ = error "unglom: oops"  -- :(
 
 -- Template to specialize per (non-unit, non-pair) t:
--- 
+--
 --  instance Unglommable (f t) f t where unglom = unglomId
 
 -- | Unglom a non-unit, non-pair

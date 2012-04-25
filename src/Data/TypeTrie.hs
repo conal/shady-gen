@@ -9,10 +9,10 @@
 -- Module      :  Data.TypeTrie
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPL-3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Memoization of functions on typed types
 ----------------------------------------------------------------------
 
@@ -73,10 +73,10 @@ tyTrie h = TyTrie { vecTr     = memoVecT     $ result          h VecT
 --                   }
 
 -- I'd like to factor out the memoBinT pattern above.  Types get tricky:
--- 
+--
 --   Could not deduce (HasType ((#) a1 b1))
 --    from the context (HasType a1, HasType b1)
--- 
+--
 -- I don't know how to give an adequate type for (#).
 
 tyUntrie :: TyTrie f -> TyFun f
@@ -231,10 +231,10 @@ memoVecT h = toVecT (memoVecP (toVecP h))
 -- newtype Endo f a = Endo (f a -> f a)
 
 -- compressE :: TyFun (Endo E)
--- compressE = memoTy $ 
+-- compressE = memoTy $
 
 compressTy :: () -> TyFun Type
 compressTy () = mCopyTy
  where
    mCopyTy = memoTy copyTy
-   copyTy 
+   copyTy

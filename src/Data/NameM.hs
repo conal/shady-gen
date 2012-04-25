@@ -5,10 +5,10 @@
 -- Module      :  Data.NameM
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Name supply monad.  Non-abstract synonym for @State [String]@
 ----------------------------------------------------------------------
 

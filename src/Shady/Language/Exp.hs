@@ -12,10 +12,10 @@
 -- Module      :  Shady.Language.Exp
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Expressions.
 ----------------------------------------------------------------------
 
@@ -121,10 +121,10 @@ instance HasExprU V where
 instance HasExpr a => HasExpr (V a) where expr = exprU
 
 -- Or:
--- 
+--
 -- instance HasExpr a => HasExpr (V a) where
 --   expr (V name ty) = op InfixL 0 "::" (X.var name) (expr ty)
--- 
+--
 -- instance HasExprU V where exprU = expr
 
 instance HasExpr a => PrettyPrec (V a) where prettyPrec = prettyExpr
@@ -249,7 +249,7 @@ appExpr (Op Mul :^ a :^ (Op Recip :^ b))   xs = appExpr (Op Divide :^ a :^ b) xs
 appExpr (Op Add :^ a :^ (Op Negate :^ b))  xs = appExpr (Op Sub :^ a :^ b) xs
 appExpr e@(Op (Cat _ _ _) :^ _ :^ _)       xs
   | First (Just e') <- catFix e               = appExpr e' xs
-appExpr (Op (Swizzle ixs) :^ v)            xs 
+appExpr (Op (Swizzle ixs) :^ v)            xs
   | Just e' <- swizzleOpt ixs v               = appExpr e' xs
 appExpr (Lam v b :^ a)                     xs = foldl ($$) (letExpr v a b) xs
 appExpr (f :^ e)                           xs = appExpr f (expr e : xs)
@@ -382,7 +382,7 @@ inverse _   _ _                          = mempty
 
 -- | Commute, to get literals together: @3 + a == a + 3@,
 -- @(a + 3) + b == (a + b) + 3@.
--- 
+--
 -- Might be a bad idea, as it can break sharing.  Think through.
 -- Not really effective without associate, which breaks even more sharing.
 commute :: a :=> a :=>? a
@@ -595,7 +595,7 @@ mulNegNeg _ _ = mempty
 -- pairFstSnd :: -- forall a b. (HasType a, HasType b) =>
 --           a :=> b :=>? (a,b)
 -- pairFstSnd (Op Fst :^ c) (Op Snd :^ c')
---   | Just Refl <- tyEq (typeT :: c) (typeT :: c'), 
+--   | Just Refl <- tyEq (typeT :: c) (typeT :: c'),
 --     c =-= c'  = pure c
 -- surjectivePair _ _ = mempty
 
@@ -686,11 +686,11 @@ pureU x = uniformV' (pureE (vec1 x))
 
 -- Here's the weird deal: if pureU uses uniformV instead of uniformV',
 -- then we trigger a bug in ghc 6.10.3:
--- 
+--
 --     ghc: panic! (the 'impossible' happened)
 --       (GHC version 6.10.3 for i386-unknown-linux):
 --             initC: srt_lbl
--- 
+--
 -- The definitions of uniformV and uniformV' are identical.  If I
 -- change the definition of uniform to use uniformV' instead of
 -- uniformV, then uniformV' becomes the fatal choice in pureU.

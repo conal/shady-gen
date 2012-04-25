@@ -7,10 +7,10 @@
 -- Module      :  Shady.Misc
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Misc useful definitions
 ----------------------------------------------------------------------
 

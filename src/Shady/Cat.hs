@@ -5,10 +5,10 @@
 -- Module      :  Graphics.Shady.Cat
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  GPL-3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Catenable vectors
 ----------------------------------------------------------------------
 

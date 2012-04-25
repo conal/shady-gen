@@ -23,7 +23,7 @@ Imports
 =======
 
 > import Prelude hiding (foldr)
-> 
+>
 > import Data.Function (on)
 > import Data.Ord (comparing)
 > import Data.List (sortBy)
@@ -83,7 +83,7 @@ For simplicity, I'll just use the printed form of the `E`.
 
 > instance Eq TExp where
 >   TExp _ s == TExp _ t = s == t
-> 
+>
 > instance Ord TExp where
 >   TExp _ s `compare` TExp _ t = s `compare` t
 
@@ -91,7 +91,7 @@ For simplicity, I'll just use the printed form of the `E`.
 Conversion from E to Graph (dag)
 ==================================
 
-I'll structure conversion from `E` to Graph (dag) around a monad for computations  that accumulate 
+I'll structure conversion from `E` to Graph (dag) around a monad for computations  that accumulate
 an exp map and a list of unused names.
 The names are guaranteed to be in ascending order so that we can trivially top-sort  the graph later.
 
@@ -118,7 +118,7 @@ Graph construction works by recursively constructing and inserting expression/na
 
 > dagifyExp :: HasType a => E a -> GraphM (E a)
 > dagifyExp e = dagN e >>= insertG
-> 
+>
 > dagN :: HasType a => E a -> GraphM (E a)
 > dagN (Var v)   = pure $ Var v
 > dagN (Op o)    = pure $ Op o
@@ -133,7 +133,7 @@ Otherwise, insert insert it, giving it a new identifier.
 > insertG e | not (abstractable e) = return e
 >           | otherwise = maybe (addExp e) return
 >                           =<< findExp e <$> S.gets fst
-> 
+>
 > addExp :: HasType a => E a -> GraphM (E a)
 > addExp e = do name <- genId
 >               S.modify (first (Map.insert (tExp e) name))

@@ -8,10 +8,10 @@
 -- Module      :  Data.PolyStableMemo
 -- Copyright   :  (c) Conal Elliott 2009
 -- License     :  AGPLv3
--- 
+--
 -- Maintainer  :  conal@conal.net
 -- Stability   :  experimental
--- 
+--
 -- Polymorphic memoization based using stable names.
 ----------------------------------------------------------------------
 
@@ -119,7 +119,7 @@ blookup stk = look
  where
    look :: [StableBind k v] -> Maybe (v a)
    look [] = Nothing
-   look (SB stk' v : binds') 
+   look (SB stk' v : binds')
      | Just Refl <- tya `tyEq` typeOf2 stk', stk == stk' = Just v
      | otherwise                                         = look binds'
    tya :: Type a
