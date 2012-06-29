@@ -213,7 +213,7 @@ data E :: * -> * where
   Var  :: V  a -> E a                   -- -- ^ variable
   (:^) :: HasType a =>
           E (a -> b) -> E a -> E b      -- -- ^ application
-  Lam  :: HasType a =>
+  Lam  :: (HasType a, HasType b) =>
           V a -> E b -> E (a -> b)      -- -- ^ abstraction
 
 -- TODO: when haddock is fixed, reinstate per-ctor haddock comments and
@@ -1080,7 +1080,7 @@ instance ( FromE u {-, Show (ExpT u)-}, HasType (ExpT u)
   fromE e = (fromE eu, fromE ev, fromE ew)
     where (eu,(ev,ew)) = (second unPairE . unPairE) e
 
-instance (FromE u, ToE v, HasType (ExpT u)) => ToE (u -> v) where
+instance (FromE u, ToE v, HasType (ExpT u), HasType (ExpT v)) => ToE (u -> v) where
   type ExpT (u -> v) = ExpT u -> ExpT v
   toEN f = do u <- genVar         -- p <- genPat
               b <- toEN (f (fromE (Var u))) -- patE p, or toE p
