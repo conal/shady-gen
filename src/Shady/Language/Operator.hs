@@ -42,7 +42,7 @@ import Shady.Misc
 
 data Op   :: * -> * where
     -- Literal
-  Lit     :: HasExpr a => a -> Op a  -- was Show =>
+  Lit     :: HasType a => a -> Op a  -- was Show =>
     -- Booleans
   -- Hack: say that And/Or work on bool vectors.  Later, revert and
   -- implement the vector versions via the scalar versions.

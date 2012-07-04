@@ -620,7 +620,7 @@ negMul a b = pure (Op Negate :^ (Op Mul :^ a :^ b))
 -- with the arrows being operators.
 
 -- | Literal expression
-pureE :: HasExpr a => a -> E a
+pureE :: HasType a => a -> E a
 pureE = Op . Lit
 
 -- | Apply a unary operator, with constant-folding and simplifications
@@ -862,7 +862,7 @@ texture :: IsNat n => Sampler n :=> Vec n R :=>* R4
 texture = liftE2 (Texture nat)
 
 -- | Literal value
-lit :: HasExpr a => a -> E a
+lit :: HasType a => a -> E a
 lit = Op . Lit
 
 

@@ -192,7 +192,7 @@ prettyTy :: Type t -> Doc
 prettyTy = text . padTo (length "float") . show
 
 
-unPair' :: (HasExpr a, HasExpr b) => E (a,b) -> (E a, E b)
+unPair' :: (HasType a, HasType b) => E (a,b) -> (E a, E b)
 unPair' (Op (Lit (a,b))) = (Op (Lit a), Op (Lit b))
 unPair' (Op Pair :^ a :^ b) = (a,b)
 unPair' p = error $ "unPair': " ++ show (expr p)
