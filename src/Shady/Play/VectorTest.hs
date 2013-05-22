@@ -137,7 +137,7 @@ tb = q <* ((sm * 3) `fmod` n <+> 2)
 
 tc = getX tb ==* getY tb
 
-te = ifB tc 5 6 :: FloatE
+te = ifE tc 5 6 :: FloatE
 
 
 sqr a = a * a

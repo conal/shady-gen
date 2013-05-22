@@ -43,7 +43,7 @@ module Shady.Language.Type
   , module TypeUnary.Vec
   ) where
 
-import Control.Applicative (pure,liftA2,Const(..))
+import Control.Applicative (liftA2,Const(..))
 import Data.Maybe (isJust)
 import Data.Foldable (toList)
 -- import Data.List (intercalate)
@@ -377,13 +377,12 @@ instance (IsNat n, IsScalar a, Pretty a) => Pretty (Vec n a) where
 instance (IsNat n, IsScalar a, Pretty     a) => PrettyPrec (Vec n a)
 instance (IsNat n, IsScalar a, PrettyPrec a) => HasExpr    (Vec n a)
 
--- Generate bogus Enum instance, needed by 'Integral'
-#define INSTANCE_Enum
+-- -- Generate bogus Enum instance, needed by 'Integral'
+-- #define INSTANCE_Enum
 
-#define CONSTRAINTS IsNat n, IsScalar applicative_arg,
-#define APPLICATIVE (Vec n)
-#include "ApplicativeNumeric-inc.hs"
-
+-- #define CONSTRAINTS IsNat n, IsScalar applicative_arg,
+-- #define APPLICATIVE (Vec n)
+-- #include "ApplicativeNumeric-inc.hs"
 
 instance (IsNat n, IsScalar a, FMod a) => FMod (Vec n a) where
   fmod = liftA2 fmod

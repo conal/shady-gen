@@ -101,7 +101,7 @@ t7  = t6 + t3
 -- let a = sin(q) in 
 --   a + (1.0 - a) * (a < 3.0 ? 4.0 : 5.0)
 -- 
-t8 = let a = sin q in a + (1 - a) * (ifB (a <* 3) 4 5)
+t8 = let a = sin q in a + (1 - a) * (ifE (a <* 3) 4 5)
 
 -- q * sin(q)
 r = q * sin q

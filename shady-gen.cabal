@@ -1,5 +1,5 @@
 Name:                shady-gen
-Version:             0.6.2
+Version:             0.6.3
 Cabal-Version:       >= 1.6
 Synopsis:            Functional GPU programming - DSEL & compiler
 Category:            Language, GPU
@@ -27,7 +27,7 @@ Library
   Build-Depends:       base >=4 && < 5, containers, mtl, wl-pprint
                      , applicative-numbers>=0.0.4, vector-space>=0.5.6
                      , TypeCompose >= 0.7
-                     , MemoTrie, ty, data-treify, Boolean
+                     , MemoTrie, ty, data-treify, Boolean >= 0.1.0
                      , type-unary >= 0.2.0
 
   Exposed-Modules:

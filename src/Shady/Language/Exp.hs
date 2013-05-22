@@ -35,7 +35,7 @@ module Shady.Language.Exp
   -- * Optimizing expression-builders
   , pureE, fmapE, liftE2, liftE3, liftE4
   -- * Operations
-  , notE
+  , notE, IfE(..), booleanE
 --   , true, false
 --   , (&&*), (||*)
 --   , (<*), (<=*), (>=*), (>*)
@@ -712,23 +712,50 @@ notE = notB
 
 -- TODO: Eliminate notE
 
-instance (IsNat n, IsScalar a {-, Show a -}) => IfB BoolE (VecE n a) where
-  ifB = liftE3 If
+type instance BooleanOf (VecE n a) = VecE n Bool
 
--- -- | Synonym for 'ifB' (transitional)
--- ifE :: IfB b a => b -> a -> a -> a
--- ifE = ifB
+-- instance (IsNat n, IsScalar a {-, Show a -}) => IfB {-BoolE-} (VecE n a) where
+--   ifB = liftE3 If
+
+-- | Conditional with a single boolean expression
+class IfE t where
+  ifE :: BoolE -> Binop t
+
+-- | 'ifE' with condition last
+booleanE :: IfE a => a -> a -> BoolE -> a
+booleanE t e i = ifE i t e
+
+-- Note: I'm using ifE, because ifB would have to take a vector of booleans in
+-- Boolean >= 0.1.0
+
+instance (IsNat n, IsScalar a {-, Show a -}) => IfE (VecE n a) where
+  ifE = liftE3 If
+
+instance (IfE p, IfE q) => IfE (p,q) where
+  ifE w (p,q) (p',q') = (ifE w p p', ifE w q q')
+
+instance (IfE p, IfE q, IfE r)
+      => IfE (p,q,r) where
+  ifE w (p,q,r) (p',q',r') = (ifE w p p', ifE w q q', ifE w r r')
+
+instance (IfE p, IfE q, IfE r, IfE s) => IfE (p,q,r,s) where
+  ifE w (p,q,r,s) (p',q',r',s') =
+    (ifE w p p', ifE w q q', ifE w r r', ifE w s s')
+
+
+--   ifE :: (IsNat n, IsScalar a {-, Show a -}) => BoolE -> Binop (VecE n a)
+--   ifE = liftE3 If
 
 -- -- | Expression-lifted conditional with condition last
 -- ifE' :: IfB b a => a -> a -> b -> a
 -- ifE' = boolean
 
 
-instance (IsNat n, IsScalar a, Eq a {- , Show a -}) => EqB (VecE n Bool) (VecE n a) where
+instance (IsNat n, IsScalar a, Eq a {- , Show a -}) => EqB {-(VecE n Bool)-} (VecE n a) where
   (==*) = liftE2 (EqualV nat)
 
 instance (IsNat n, IsScalar a, Ord a {- , Show a -}) =>
-         OrdB (VecE n Bool) (VecE n a) where
+         OrdB {-(VecE n Bool)-} (VecE n a) where
   (<*) = liftE2 (Lt nat)
 
 infix  4  ==^, /=^

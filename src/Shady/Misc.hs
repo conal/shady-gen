@@ -43,7 +43,7 @@ clamp :: Ord a => (a,a) -> a -> a
 clamp (lo,hi) = max lo . min hi
 
 -- | Variation on 'clamp', using 'OrdB' instead of 'Ord'
-clampB :: (IfB bool a, OrdB bool a) => (a,a) -> a -> a
+clampB :: (IfB a, OrdB a) => (a,a) -> a -> a
 clampB (lo,hi) = maxB lo . minB hi
 
 -- | Smooth, clamped transition
