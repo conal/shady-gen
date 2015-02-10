@@ -1,4 +1,4 @@
-*Shady* is a high-performance implementation of functional graphics, in the heritage of [Pan](http://conal.net/Pan) and [Vertigo](http://conal.net/Pan).
+*Shady* is a high-performance implementation of functional graphics, in the heritage of [Pan](http://conal.net/Pan) and [Vertigo](http://conal.net/Vertigo).
 The components are as follows:
 
 * Compile functional specifications into GPU code: [shady-gen](http://github.com/conal/shady-gen)
