@@ -24,7 +24,8 @@ Source-Repository head
 Library
   hs-Source-Dirs:      src
 
-  Build-Depends:       base >=4 && < 5, containers, mtl, wl-pprint
+  Build-Depends:       base >=4 && < 5, base-orphans >= 0.3.1
+                     , containers, mtl, wl-pprint
                      , applicative-numbers>=0.0.4, vector-space>=0.5.6
                      , TypeCompose >= 0.7
                      , MemoTrie, ty, data-treify, Boolean >= 0.1.0

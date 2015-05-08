@@ -1,12 +1,11 @@
 {-# LANGUAGE GADTs, RankNTypes, KindSignatures, TypeOperators
-           , StandaloneDeriving, GeneralizedNewtypeDeriving
            , PatternGuards, ScopedTypeVariables
            , FlexibleContexts, FlexibleInstances
            , TypeFamilies, TypeSynonymInstances
            , MultiParamTypeClasses, UndecidableInstances
            , EmptyDataDecls, CPP
   #-}
-{-# OPTIONS_GHC -Wall -fno-warn-orphans #-}
+{-# OPTIONS_GHC -Wall #-}
 ----------------------------------------------------------------------
 -- |
 -- Module      :  Shady.Language.Exp
@@ -60,6 +59,7 @@ module Shady.Language.Exp
   )
   where
 
+import Data.Orphans ()
 import Data.Monoid (Monoid(..),First(..))
 import Data.Maybe (fromMaybe)
 import Control.Applicative (Applicative(pure),(<$>))
@@ -85,14 +85,13 @@ import Shady.Language.Operator
 import Shady.Misc
 import Shady.Complex
 
+#if MIN_VERSION_base(4,8,0)
+import Prelude hiding ((<*))
+#endif
 
 {--------------------------------------------------------------------
     Strays
 --------------------------------------------------------------------}
-
-deriving instance Functor     First
-deriving instance Applicative First
-deriving instance Monad       First
 
 fromFirst :: a -> First a -> a
 fromFirst a = fromMaybe a . getFirst
