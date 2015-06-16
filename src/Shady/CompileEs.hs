@@ -20,7 +20,7 @@
 
 module Shady.CompileEs
   ( shaders
-  , Pos, (:->)(..), ShaderVF
+  , Pos, (:-^), (:-*), (:->)(..), ShaderVF
   , GLSL
   , shaderProgram
   -- , ShaderExe(..), compile

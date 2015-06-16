@@ -72,7 +72,7 @@ data Complex a
   = !a :+ !a    -- ^ forms a complex number from its real and imaginary
                 -- rectangular components.
 # if __GLASGOW_HASKELL__
-        deriving (Eq, Show, Read, Data)
+        deriving (Eq, Show, Read, Typeable, Data)
 # else
         deriving (Eq, Show, Read)
 # endif
@@ -167,8 +167,8 @@ atan2' y x = atan (y/x)
 -- -----------------------------------------------------------------------------
 -- Instances of Complex
 
-#include "Typeable.h"
-INSTANCE_TYPEABLE1(Complex,complexTc,"Complex")
+-- #include "Typeable.h"
+-- INSTANCE_TYPEABLE1(Complex,complexTc,"Complex")
 
 instance (Eq a, Floating a, AdditiveGroup a) => Num (Complex a)  where
     -- The Eq here is needed with GHC 7.4.1 & later, given the signum

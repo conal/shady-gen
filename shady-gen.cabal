@@ -28,7 +28,7 @@ Library
                      , applicative-numbers>=0.0.4, vector-space>=0.5.6
                      , TypeCompose >= 0.7
                      , MemoTrie, ty, data-treify, Boolean >= 0.1.0
-                     , type-unary >= 0.2.0
+                     , type-unary >= 0.2.8
 
   Exposed-Modules:
                        Text.PrettyPrint.Leijen.PrettyPrec

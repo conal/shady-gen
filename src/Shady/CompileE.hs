@@ -12,7 +12,7 @@
 -- 
 -- Generate and compile vertex and fragment shaders.
 -- 
--- In this version, shader programs are represented by functions function
+-- In this version, shader programs are represented by functions from
 -- a single expression to a single expression.  See also CompileEs, which
 -- allows functions between more flexible representations.
 ----------------------------------------------------------------------

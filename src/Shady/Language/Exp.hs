@@ -672,9 +672,10 @@ instance Eq (E a) where
   (/=) = noOv "(/=)"
 
 instance (IsNat n, IsScalar a, Ord a {-, Show a -}) => Ord (E (Vec n a)) where
-  min = liftE2 Min
-  max = liftE2 Max
-  (<) = noOv "(<)"
+  min  = liftE2 Min
+  max  = liftE2 Max
+  (<)  = noOv "(<)"
+  (<=) = noOv "(<=)"
 
 instance IsNat n => Boolean (VecE n Bool) where
   false = pureU  False

@@ -47,7 +47,7 @@ import Control.Applicative (liftA2,Const(..))
 import Data.Maybe (isJust)
 import Data.Foldable (toList)
 -- import Data.List (intercalate)
-import Control.Monad.Instances ()
+-- import Control.Monad.Instances ()
 import Foreign.Storable
 
 import Data.Typeable (Typeable)

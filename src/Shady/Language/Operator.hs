@@ -30,6 +30,8 @@ import Control.Compose (result)
 
 import Data.VectorSpace (VectorSpace(..),InnerSpace(..))
 
+import TypeUnary.Vec ()  -- instances
+
 -- import Shady.Language.Equality
 import Shady.Language.Type
 -- import Shady.Vec
