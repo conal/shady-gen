@@ -50,6 +50,7 @@ import Data.Foldable (toList)
 -- import Control.Monad.Instances ()
 import Foreign.Storable
 
+import Data.Orphans ()
 import Data.Typeable (Typeable)
 
 import Text.PrettyPrint.Leijen
@@ -327,9 +328,6 @@ instance Eq x => SynEq (Const x) where (=-=) = (==)
 -- | Higher-order variant of 'SynEq'.  Can be defined via '(=-=)', or vice versa.
 class SynEq2 f where
   (=--=) :: (SynEq v, HasType c) => f v c -> f v c -> Bool
-
-
-deriving instance Eq a => Eq (Const a b)
 
 
 {--------------------------------------------------------------------
