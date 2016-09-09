@@ -14,6 +14,8 @@
 
 module Shady.Play.CseTest where
 
+import Prelude hiding ((<*))
+
 -- import Control.Applicative (liftA2)
 
 import Data.VectorSpace

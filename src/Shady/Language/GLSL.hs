@@ -28,6 +28,7 @@ module Shady.Language.GLSL
   )
   where
 
+import Prelude hiding ((<$>))
 import Data.Monoid (Monoid(..))
 -- import Data.Maybe  (maybe)
 import Data.Char   (toLower)
@@ -247,7 +248,7 @@ instance Pretty Program where
 data BindO a = BindO (Pat a) (E a)
 
 -- | 'V' specialization of '(=:)'.
-(=::) :: HasType a => V a -> E a -> BindO a
+(=::) :: V a -> E a -> BindO a
 v =:: e = BindO (BaseG v) e
 
 instance PairF BindO where

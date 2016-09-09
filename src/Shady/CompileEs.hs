@@ -57,7 +57,7 @@ data a' :-> o' =
 type ShaderVF a' = a' :-> ()
 
 -- | Convert loosely structured shaders into single-exp shader
-shaders :: forall u' a' o'.
+shaders :: forall a o u u' a' o'.
            (FromE u', FromE a', FromE o') =>
            (o ~ ExpT o',a ~ ExpT a',u ~ ExpT u') =>
            ( HasExpr o, HasType o, Show o) =>

@@ -14,6 +14,8 @@
 
 module Shady.Play.VectorTest where
 
+import Prelude hiding ((<*))
+
 -- For testing
 import Text.PrettyPrint.Leijen.DocExpr (Expr,HasExpr(expr))
 

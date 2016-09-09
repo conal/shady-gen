@@ -24,6 +24,8 @@ module Shady.CompileE
   -- , ShaderExe(..), sinker, compile
   ) where
 
+import Prelude hiding ((<$>))
+
 -- import Control.Applicative (liftA3)
 
 import Text.PrettyPrint.Leijen
@@ -90,8 +92,7 @@ instance (HasExpr u, HasExpr a) => Show (GLSL u a) where
 
 -- | Compile a parameterized shader program.  TODO: generalize to non-()
 -- outputs, i.e., to @u :=> a :-> o@.
-shaderProgram :: (HasType a, HasExpr a, HasType u, HasExpr u) =>
-                 (u :=> ShaderVF a) -> GLSL u a
+shaderProgram :: (HasType a, HasType u) => (u :=> ShaderVF a) -> GLSL u a
 shaderProgram uav =
   case uav (patE u) of
     ShaderVF vert frag ->
@@ -117,7 +118,7 @@ shaderProgram uav =
 
 -- TODO: What do we want to do when o /= ()?
 
-shader :: (HasExpr a, HasType a) => [Declaration] -> Pat a -> E a -> Shader
+shader :: HasType a => [Declaration] -> Pat a -> E a -> Shader
 shader decls p e = Sh decls [mainDef (p =: e)]
 
 {-
