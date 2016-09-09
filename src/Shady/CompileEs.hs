@@ -60,7 +60,7 @@ type ShaderVF a' = a' :-> ()
 shaders :: forall a o u u' a' o'.
            (FromE u', FromE a', FromE o') =>
            (o ~ ExpT o',a ~ ExpT a',u ~ ExpT u') =>
-           ( HasExpr o, HasType o, Show o) =>
+           HasType o =>
            (u' -> (a' :-> o'))
         -> u :=> (a C.:-> o)
 shaders f u = case f (fromE u) of
@@ -70,8 +70,8 @@ shaders f u = case f (fromE u) of
 -- | Compile a parameterized shader program.  TODO: generalize to non-()
 -- outputs, i.e., to @u :=> a :-> o@.
 shaderProgram :: forall u' a' u a.
-                 ( FromE u', u ~ ExpT u', FromE a', a ~ ExpT a') =>
-                 ( HasType a, HasExpr a, HasType u, HasExpr u ) =>
+                 (FromE u', u ~ ExpT u', FromE a', a ~ ExpT a') =>
+                 (HasType a, HasType u) =>
                  (u' -> ShaderVF a') -> GLSL u a
 shaderProgram = C.shaderProgram . shaders
 

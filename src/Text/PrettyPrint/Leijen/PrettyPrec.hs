@@ -55,7 +55,7 @@ instance PrettyPrec Float
 instance PrettyPrec Double
 
 -- Orphan. Missing from wl-pprint
-instance (Show a, Integral a) => Pretty (Ratio a) where pretty = text . show
+instance Show a => Pretty (Ratio a) where pretty = text . show
 
 instance Pretty a => PrettyPrec [a]
 
@@ -66,7 +66,7 @@ instance (Pretty a,Pretty b,Pretty c) => PrettyPrec (a,b,c)
 instance PrettyPrec a => PrettyPrec (Maybe a) where
   prettyPrec p = maybe empty (prettyPrec p)
 
-instance (Show a, Integral a) => PrettyPrec (Ratio a) where
+instance Show a => PrettyPrec (Ratio a) where
   prettyPrec = const (text . show)
 
 -- TODO: Revisit Ratio. Use p

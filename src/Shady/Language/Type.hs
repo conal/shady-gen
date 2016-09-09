@@ -373,7 +373,7 @@ instance (IsNat n, IsScalar a, Pretty a) => Pretty (Vec n a) where
 -- generation uses Pretty instead of Show.
 
 instance (IsNat n, IsScalar a, Pretty     a) => PrettyPrec (Vec n a)
-instance (IsNat n, IsScalar a, PrettyPrec a) => HasExpr    (Vec n a)
+instance (IsNat n, IsScalar a) => HasExpr    (Vec n a)
 
 -- -- Generate bogus Enum instance, needed by 'Integral'
 -- #define INSTANCE_Enum
@@ -382,5 +382,5 @@ instance (IsNat n, IsScalar a, PrettyPrec a) => HasExpr    (Vec n a)
 -- #define APPLICATIVE (Vec n)
 -- #include "ApplicativeNumeric-inc.hs"
 
-instance (IsNat n, IsScalar a, FMod a) => FMod (Vec n a) where
+instance (IsNat n, FMod a) => FMod (Vec n a) where
   fmod = liftA2 fmod

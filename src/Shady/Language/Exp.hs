@@ -228,8 +228,7 @@ instance SynEq E where
 -- is optimization.
 
 -- | Short-hand for beta-redex
-letE :: (HasType a, HasType b) =>
-        V a -> E a -> E b -> E b
+letE :: HasType a => V a -> E a -> E b -> E b
 letE v a b = Lam v b :^ a
 
 
@@ -279,7 +278,7 @@ swizzleOpt ixs v | Just Refl <- m `natEq` n, ixs == indices = Just v
 
 
 -- Let expression
-letExpr :: HasType a => V a -> E a -> E b -> Expr
+letExpr :: V a -> E a -> E b -> Expr
 letExpr (V n _) a b = letX n (expr a) (expr b)
 
 -- exprFun :: (HasExpr c, HasType a) =>
@@ -310,22 +309,21 @@ type a :=>? b = a :=> First (E b)
 --------------------------------------------------------------------}
 
 -- | Convenient operator application
-op1 :: (HasType a, HasType b) =>
-       Op (a -> b) -> a :=>* b
+op1 :: HasType a => Op (a -> b) -> a :=>* b
 op1 o a = Op o :^ a
 
 -- | Convenient operator application
-op2 :: (HasType a, HasType b, HasType c) =>
+op2 :: (HasType a, HasType b) =>
        Op (a -> b -> c) -> a :=> b :=>* c
 op2 o a b = op1 o a :^ b
 
 -- | Convenient operator application
-op3 :: (HasType a, HasType b, HasType c, HasType d) =>
+op3 :: (HasType a, HasType b, HasType c) =>
        Op (a -> b -> c -> d) -> a :=> b :=> c :=>* d
 op3 o a b c = op2 o a b :^ c
 
 -- | Convenient operator application
-op4 :: (HasType a, HasType b, HasType c, HasType d, HasType e) =>
+op4 :: (HasType a, HasType b, HasType c, HasType d) =>
        Op (a -> b -> c -> d -> e) -> a :=> b :=> c :=> d :=>* e
 op4 o a b c d = op3 o a b c :^ d
 
@@ -543,8 +541,7 @@ _ <+?> _ = mempty
 
 -- | Undistribute: @a*b + a*b' == a*(b+b')@.  Also, dot products
 -- @a*b + a'*b' == (a,a') <.> (b,b')@
-addMul :: forall n a.
-          (IsNat n, IsScalar a, Num a) =>
+addMul :: forall n a. (IsNat n, IsScalar a) =>
           Vec n a :=> Vec n a :=>? Vec n a
 -- (Op Mul :^ a :^ b) `addMul` (Op Mul :^ a' :^ b')
 --   | a =-= a' = pure (a * (b + b'))
@@ -771,7 +768,7 @@ infix  4  ==^, /=^
 (/=^) = (result.result) notE (==^)
 
 
-instance Enum a => Enum (E a) where
+instance Enum (E a) where
   succ           = noOv "succ"
   pred           = noOv "pred"
   toEnum         = noOv "toEnum"
@@ -1148,9 +1145,9 @@ toFromE = fromE ~> toE
 -- | Complex-valued expressions
 type ComplexE a = Complex (E (Vec1 a))
 
-instance (Show a, IsScalar a) => ToE (ComplexE a) where
+instance IsScalar a => ToE (ComplexE a) where
   type ExpT (ComplexE a) = Vec2 a
   toEN (x :+ y) = return $ x <+> y
-instance (Show a, IsScalar a) => FromE (ComplexE a) where
+instance IsScalar a => FromE (ComplexE a) where
   fromE c = getX c :+ getY c
 

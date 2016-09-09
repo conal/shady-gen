@@ -256,16 +256,16 @@ instance (Eq a, Floating a, AdditiveGroup a) => Floating (Complex a) where
     Pretty printing
 --------------------------------------------------------------------}
 
-instance (Show a, RealFloat a) => Pretty (Complex a) where
+instance Show a => Pretty (Complex a) where
   pretty = text . show
 
-instance (Show a, RealFloat a) => PrettyPrec (Complex a)
+instance Show a => PrettyPrec (Complex a)
   -- default
 
 -- TODO: Revisit this instance. Use p
 
 -- infix  6  :+
-instance (Show a, RealFloat a, HasExpr a) => HasExpr (Complex a) where
+instance (Show a, HasExpr a) => HasExpr (Complex a) where
   expr (x :+ y) = op Infix 6 ":+" (expr x) (expr y)
 
 -- TODO: Do I really need HasExpr for Complex? I don't generate them in code.

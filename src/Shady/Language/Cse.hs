@@ -75,14 +75,14 @@ bindsF binds = \ (Tid i' a') -> extract a' (I.lookup i' m)
 tid :: HasType a => NodeId -> Tid a
 tid i = Tid i typeT
 
-letI :: (HasType a, HasType b) => NodeId -> E a -> E b -> E b
+letI :: HasType a => NodeId -> E a -> E b -> E b
 letI i = letE (ev (tid i))
 
 unGraph :: HasType a => Graph a -> E a
 unGraph (Graph binds root) = foldr llet (var' root) (reverse binds)
  where
    -- Wrap a let if non-trivial
-   llet :: HasType b => Bind -> E b -> E b
+   llet :: Bind -> E b -> E b
    llet bind | trivial bind = id
    llet (Bind i n)          = letI i (nodeE' n)
    -- How many uses of variable

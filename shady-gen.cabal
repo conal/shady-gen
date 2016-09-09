@@ -57,3 +57,4 @@ Library
                        Data.PolyStableMemo
                        -- Data.NatTrie
                        -- Data.TypeTrie
+  ghc-options:         -Wall

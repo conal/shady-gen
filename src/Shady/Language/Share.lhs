@@ -257,8 +257,7 @@ Now revisit `undagify`, performing some inlining along the way.
 >    inline (Lam v b) = Lam v (inline b) -- assumes no shadowing
 >    inline e = e
 >    -- Make a let binding unless an inlined variable.
->    lett' :: (HasType b, HasType c) =>
->             Id -> E b -> E c -> E c
+>    lett' :: HasType b => Id -> E b -> E c -> E c
 >    lett' n rhs | Set.member n ins = id
 >                | otherwise        = letE (var n) rhs
 
